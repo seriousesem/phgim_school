@@ -26,3 +26,7 @@ object EndpointKeys {
     const val QUARTER_ID = "quarter_id"
     const val WEEK_ID = "week_id"
 }
+object ActionOnWeek {
+    const val NEXT_WEEK = "next_week"
+    const val PREVIOUS_WEEK = "previous_week"
+}

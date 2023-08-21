@@ -12,7 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.serioussem.phgim.school.presentation.ui.navigation.Navigation
+import com.serioussem.phgim.school.presentation.ui.screens.splash.SplashScreen
 import com.serioussem.phgim.school.presentation.ui.theme.PhgimSchoolTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,26 +25,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PhgimSchoolTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-
-                ) {
-                    val viewModel: MainViewModel = hiltViewModel()
-                    viewModel.fetchJournal()
-                    Greeting(viewModel = viewModel)
-                }
+                Navigation()
             }
         }
     }
-}
-
-@Composable
-fun Greeting(modifier: Modifier = Modifier, viewModel: MainViewModel) {
-    Text(
-        text = viewModel.pageHtml.value,
-        modifier = modifier
-            .padding(all = 16.dp)
-            .verticalScroll(rememberScrollState()),
-    )
 }

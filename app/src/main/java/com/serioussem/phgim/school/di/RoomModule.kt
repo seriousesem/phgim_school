@@ -27,6 +27,6 @@ object RoomModule {
 
     @Provides
     @Singleton
-    fun provideLessonDao(appDataBase: AppDataBase): ClassScheduleDao =
+    fun provideClassScheduleDao(appDataBase: AppDataBase): ClassScheduleDao =
         appDataBase.fetchClassScheduleDao()
 }
