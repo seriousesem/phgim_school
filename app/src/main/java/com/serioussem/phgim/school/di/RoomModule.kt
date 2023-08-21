@@ -1,9 +1,9 @@
 package com.serioussem.phgim.school.di
 import android.content.Context
 import androidx.room.Room
-import com.serioussem.phgim.school.data.room.PhgimSchoolDataBase
-import com.serioussem.phgim.school.data.room.dao.LessonDao
-import com.serioussem.phgim.school.utils.RoomNames.DATABASE_NAME
+import com.serioussem.phgim.school.data.room.db.AppDataBase
+import com.serioussem.phgim.school.data.room.dao.ClassScheduleDao
+import com.serioussem.phgim.school.utils.RoomConstants.DATABASE_NAME
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,14 +19,14 @@ object RoomModule {
     @Singleton
     fun provideSpaceScutumDataBase(
         @ApplicationContext context: Context
-    ): PhgimSchoolDataBase = Room.databaseBuilder(
+    ): AppDataBase = Room.databaseBuilder(
         context,
-        PhgimSchoolDataBase::class.java,
+        AppDataBase::class.java,
         DATABASE_NAME
     ).build()
 
     @Provides
     @Singleton
-    fun provideLessonDao(phgimSchoolDataBase: PhgimSchoolDataBase): LessonDao =
-        phgimSchoolDataBase.fetchLessonDao()
+    fun provideLessonDao(appDataBase: AppDataBase): ClassScheduleDao =
+        appDataBase.fetchClassScheduleDao()
 }

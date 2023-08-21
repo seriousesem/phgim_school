@@ -1,4 +1,4 @@
-package com.serioussem.phgim.school
+package com.serioussem.phgim.school.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.serioussem.phgim.school.ui.theme.PhgimSchoolTheme
+import com.serioussem.phgim.school.presentation.ui.theme.PhgimSchoolTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
 
                 ) {
-                    val viewModel: PhgimSchoolViewModel = hiltViewModel()
+                    val viewModel: MainViewModel = hiltViewModel()
                     viewModel.fetchJournal()
                     Greeting(viewModel = viewModel)
                 }
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(modifier: Modifier = Modifier, viewModel: PhgimSchoolViewModel) {
+fun Greeting(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     Text(
         text = viewModel.pageHtml.value,
         modifier = modifier

@@ -1,4 +1,5 @@
 package com.serioussem.phgim.school.data.retrofit
+import com.serioussem.phgim.school.utils.Endpoints.CLASS_SCHEDULE
 import com.serioussem.phgim.school.utils.Endpoints.LOGIN
 import retrofit2.Response
 import retrofit2.http.Field
@@ -11,18 +12,24 @@ import retrofit2.http.Path
 interface RetrofitService {
 
     @GET(LOGIN)
-    suspend fun fetchCsrfToken(): Response<String>
+    suspend fun getLoginPage(): Response<String>
 
 
     @FormUrlEncoded
     @POST(LOGIN)
-    suspend fun fetchPupilId(
+    suspend fun getUserPage(
         @Field("username") username: String,
         @Field("password") password: String,
         @Field("csrfmiddlewaretoken") csrfToken: String
     ): Response<String>
 
-    @GET("/pupil/{pupilId}/dnevnik/quarter/51086/week/2023-09-25")
-    suspend fun fetchJournal(@Path("pupilId") pupilId: String): Response<String>
+    @GET(CLASS_SCHEDULE)
+    suspend fun getClassScheduleQuarterPage(@Path("pupilId") pupilId: String): Response<String>
+
+    @GET("$CLASS_SCHEDULE/quarter/{quarter}")
+    suspend fun getClassScheduleWeekPage(@Path("pupilId") pupilId: String, @Path("quarter") quarterId: String): Response<String>
+
+    @GET("/{endpoint}")
+    suspend fun getClassScheduleCurrentPage(@Path("endpoint") endpoint: String): Response<String>
 
 }

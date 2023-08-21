@@ -1,4 +1,4 @@
-package com.serioussem.phgim.school
+package com.serioussem.phgim.school.app
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

@@ -63,20 +63,3 @@ object RetrofitModule {
             .create(RetrofitService::class.java)
     }
 }
-//cookieJar(object : CookieJar {
-//    private var cookies: List<Cookie> = ArrayList()
-//    private var sessionId: String? = null
-//
-//    fun setSessionId(sessionId: String) {
-//        this.sessionId = sessionId
-//    }
-//
-//    override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-//        this.cookies = cookies
-//    }
-//
-//    override fun loadForRequest(url: HttpUrl): List<Cookie> {
-//        val filteredCookies = cookies.filter { it.matches(url) }
-//        return filteredCookies
-//    }
-//})

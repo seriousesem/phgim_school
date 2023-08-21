@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">Phgim school</string>
+    <string name="app_name">Мій щоденник</string>
+    <string-array name="days_of_week">
+        <item>Понеділок</item>
+        <item>Вівторок</item>
+        <item>Середа</item>
+        <item>Четвер</item>
+        <item>П\'ятниця</item>
+        <item>Cубота</item>
+    </string-array>
 </resources>

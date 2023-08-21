@@ -1,4 +1,4 @@
-package com.serioussem.phgim.school.ui.theme
+package com.serioussem.phgim.school.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
