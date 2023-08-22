@@ -8,4 +8,8 @@
         <item>П\'ятниця</item>
         <item>Cубота</item>
     </string-array>
+    <string name="enter_login_and_password">Введіть ваш логін і пароль</string>
+    <string name="login_label">Логін</string>
+    <string name="password_label">Пароль</string>
+    <string name="sign_in">Увійти</string>
 </resources>

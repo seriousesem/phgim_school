@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,20 +30,23 @@ fun SplashScreen(
     navController: NavController
 ) {
     LaunchedEffect(key1 = false){
-//        viewModel.loadAndSaveClassSchedule()
-        delay(3000L)
-        navController.navigate(HOME_SCREEN)
+        viewModel.navigateToNextScreen(navController)
     }
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.app_background),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize(),
+        )
         Column(
             modifier = modifier
-                .fillMaxSize()
-                .background(color = Color.LightGray)
-            ,
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

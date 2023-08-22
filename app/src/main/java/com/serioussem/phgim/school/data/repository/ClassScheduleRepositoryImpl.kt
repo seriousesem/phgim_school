@@ -1,5 +1,4 @@
 package com.serioussem.phgim.school.data.repository
-
 import com.serioussem.phgim.school.data.jsoup.JsoupParser
 import com.serioussem.phgim.school.data.mapper.toClassSchedule
 import com.serioussem.phgim.school.data.mapper.toClassScheduleEntity
@@ -11,9 +10,9 @@ import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
 import com.serioussem.phgim.school.domain.util.Result
 import com.serioussem.phgim.school.utils.ActionOnWeek.NEXT_WEEK
 import com.serioussem.phgim.school.utils.ActionOnWeek.PREVIOUS_WEEK
-import com.serioussem.phgim.school.utils.EndpointKeys.PUPIL_ID
-import com.serioussem.phgim.school.utils.EndpointKeys.QUARTER_ID
-import com.serioussem.phgim.school.utils.EndpointKeys.WEEK_ID
+import com.serioussem.phgim.school.utils.LocalStorageKeys.PUPIL_ID
+import com.serioussem.phgim.school.utils.LocalStorageKeys.QUARTER_ID
+import com.serioussem.phgim.school.utils.LocalStorageKeys.WEEK_ID
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
