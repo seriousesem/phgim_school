@@ -7,9 +7,11 @@ import com.serioussem.phgim.school.data.room.dao.ClassScheduleDao
 import com.serioussem.phgim.school.data.storage.LocalStorage
 import com.serioussem.phgim.school.domain.model.ClassSchedule
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
-import com.serioussem.phgim.school.domain.util.Result
+import com.serioussem.phgim.school.domain.core.Result
 import com.serioussem.phgim.school.utils.ActionOnWeek.NEXT_WEEK
 import com.serioussem.phgim.school.utils.ActionOnWeek.PREVIOUS_WEEK
+import com.serioussem.phgim.school.utils.LocalStorageKeys.LOGIN_KEY
+import com.serioussem.phgim.school.utils.LocalStorageKeys.PASSWORD_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PUPIL_ID
 import com.serioussem.phgim.school.utils.LocalStorageKeys.QUARTER_ID
 import com.serioussem.phgim.school.utils.LocalStorageKeys.WEEK_ID
@@ -18,11 +20,27 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class ClassScheduleRepositoryImpl @Inject constructor(
-    private val service: RetrofitService,
+    private var service: RetrofitService?,
     private val jsoupParser: JsoupParser,
     private val storage: LocalStorage,
     private val classScheduleDao: ClassScheduleDao
 ) : ClassScheduleRepository {
+    override suspend fun signIn(login: String, password: String): Result<Boolean> {
+        return try {
+            val token = getToken()
+            val pageResponse = service?.getUserPage(login, password, token)
+            val pupilId = pageResponse?.let { jsoupParser.parsePupilId(it) }
+            if (pupilId?.isEmpty() == true) {
+                service = null
+                Result.Error("Не вдалося увійти", data = false)
+            } else {
+                Result.Success(data = true)
+            }
+        } catch (e: Exception) {
+            Result.Error(message = e.message ?: "Login error", data = false)
+        }
+    }
+
     override suspend fun loadAndSaveClassSchedule(): Result<Boolean> {
         return try {
             getCurrentWeek()
@@ -82,16 +100,9 @@ class ClassScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    companion object {
-        const val USER_NAME = "JuliaNabok"
-        const val PASSWORD = "qw1234"
-//        const val USER_NAME = "Mariana-Nabok"
-//        const val PASSWORD = "Nabok2009"
-    }
-
     private suspend fun getToken(): String {
         try {
-            val tokenResponse = service.getLoginPage().body() ?: ""
+            val tokenResponse = service?.getLoginPage()?.body() ?: ""
             return jsoupParser.parseToken(tokenResponse)
         } catch (e: Exception) {
             throw e
@@ -100,10 +111,12 @@ class ClassScheduleRepositoryImpl @Inject constructor(
 
     private suspend fun getPupilId() {
         try {
+            val login = storage.loadData<String>(LOGIN_KEY, defaultValue = "")
+            val password = storage.loadData<String>(PASSWORD_KEY, defaultValue = "")
             val token = getToken()
-            val endpointResponse = service.getUserPage(USER_NAME, PASSWORD, token)
-            val pupilId = jsoupParser.parsePupilId(endpointResponse)
-            storage.saveData(PUPIL_ID, pupilId)
+            val pageResponse = service?.getUserPage(login, password, token)
+            val pupilId = pageResponse?.let { jsoupParser.parsePupilId(it) }
+            storage.saveData(PUPIL_ID, pupilId ?: "")
         } catch (e: Exception) {
             throw e
         }
@@ -112,9 +125,9 @@ class ClassScheduleRepositoryImpl @Inject constructor(
     private suspend fun getClassScheduleQuarterId() {
         try {
             val pupilId = storage.loadData<String>(PUPIL_ID, defaultValue = "")
-            val endpointResponse = service.getClassScheduleQuarterPage(pupilId)
-            val quarterId = jsoupParser.parseQuarter(endpointResponse)
-            storage.saveData(QUARTER_ID, quarterId)
+            val pageResponse = service?.getClassScheduleQuarterPage(pupilId)
+            val quarterId = pageResponse?.let { jsoupParser.parseQuarter(it) }
+            storage.saveData(QUARTER_ID, quarterId ?: "")
         } catch (e: Exception) {
             throw e
         }
@@ -130,9 +143,9 @@ class ClassScheduleRepositoryImpl @Inject constructor(
                 quarterId = storage.loadData(QUARTER_ID, defaultValue = "")
             }
             val endpointResponse =
-                service.getClassScheduleCurrentWeekPage(pupilId = pupilId, quarterId = quarterId)
-            val weekId = jsoupParser.parseWeek(endpointResponse)
-            storage.saveData(WEEK_ID, weekId)
+                service?.getClassScheduleCurrentWeekPage(pupilId = pupilId, quarterId = quarterId)
+            val weekId = endpointResponse?.let { jsoupParser.parseWeek(it) }
+            storage.saveData(WEEK_ID, weekId ?: "")
         } catch (e: Exception) {
             throw e
         }
@@ -152,7 +165,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
     private suspend fun getClassSchedulePageHtml(weekId: String): String {
         return try {
             val endpoint = getClassScheduleEndpoint(weekId)
-            val pageHtml = service.getClassScheduleCurrentPage(endpoint).body().toString()
+            val pageHtml = service?.getClassScheduleCurrentPage(endpoint)?.body().toString()
             pageHtml
         } catch (e: Exception) {
             throw e
@@ -175,4 +188,5 @@ class ClassScheduleRepositoryImpl @Inject constructor(
             weekId
         }
     }
+
 }

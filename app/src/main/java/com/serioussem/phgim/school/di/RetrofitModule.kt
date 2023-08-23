@@ -1,21 +1,16 @@
 package com.serioussem.phgim.school.di
-
 import com.serioussem.phgim.school.data.retrofit.RetrofitService
 import com.serioussem.phgim.school.utils.URL.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Cookie
-import okhttp3.CookieJar
-import okhttp3.HttpUrl
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.net.CookieHandler
 import java.net.CookieManager
 import java.net.CookiePolicy
 import java.util.concurrent.TimeUnit
@@ -34,9 +29,14 @@ object RetrofitModule {
 
     @Provides
     @Singleton
-    fun provideJavaNetCookieJar(): JavaNetCookieJar{
+    fun provideCookieManager(): CookieManager {
         val cookieManager = CookieManager()
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL)
+        return cookieManager
+    }
+    @Provides
+    @Singleton
+    fun provideJavaNetCookieJar(cookieManager: CookieManager): JavaNetCookieJar{
         return  JavaNetCookieJar(cookieManager)
     }
 

@@ -12,4 +12,8 @@
     <string name="login_label">Логін</string>
     <string name="password_label">Пароль</string>
     <string name="sign_in">Увійти</string>
+    <string name="error_dialog_title">Сталася помилка</string>
+    <string name="ok">Добре</string>
+    <string name="cancel">Відмінити</string>
+    <string name="close">Закрити</string>
 </resources>

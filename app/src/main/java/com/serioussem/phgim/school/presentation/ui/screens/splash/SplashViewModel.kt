@@ -1,8 +1,9 @@
 package com.serioussem.phgim.school.presentation.ui.screens.splash
 
-import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -24,8 +25,8 @@ class SplashViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var _isDownloaded = mutableStateOf(false)
-    private var _loadingProgress = mutableFloatStateOf(0.0F)
-    val loadingProgress = _loadingProgress
+    var loadingProgressState by mutableFloatStateOf(0.0F)
+        private set
 
     fun loadAndSaveClassSchedule() {
         viewModelScope.launch {
@@ -54,9 +55,9 @@ class SplashViewModel @Inject constructor(
     }
 
     private suspend fun startLoadingProgress(authorizationStatus: Boolean) {
-        val progressDelay = if (authorizationStatus) 100L else 20L
-        while (_loadingProgress.floatValue < 1) {
-            _loadingProgress.floatValue += 0.01F
+        val progressDelay = if (authorizationStatus) 100L else 25L
+        while (loadingProgressState < 1) {
+            loadingProgressState += 0.01F
            delay(progressDelay)
         }
     }

@@ -16,6 +16,5 @@ fun ScreenProgress() {
             .fillMaxWidth()
             .fillMaxHeight()
             .wrapContentSize(Alignment.Center),
-        color = Green
     )
 }

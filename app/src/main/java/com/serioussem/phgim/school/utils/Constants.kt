@@ -5,8 +5,8 @@ object URL {
 }
 
 object Endpoints {
-    const val LOGIN = "/login_"
-    const val CLASS_SCHEDULE = "/pupil/{pupilId}/dnevnik"
+    const val LOGIN_ENDPOINT = "/login_"
+    const val CLASS_SCHEDULE_ENDPOINT = "/pupil/{pupilId}/dnevnik"
 }
 
 object LocalStorageKeys {

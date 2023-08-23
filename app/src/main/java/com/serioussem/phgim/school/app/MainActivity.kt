@@ -24,7 +24,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PhgimSchoolTheme {
+            PhgimSchoolTheme(
+                darkTheme = false
+            ) {
                 Navigation()
             }
         }
