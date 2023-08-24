@@ -6,8 +6,8 @@ import com.serioussem.phgim.school.data.model.LessonsOfDayDataModel
 import com.serioussem.phgim.school.data.room.entity.ClassScheduleEntity
 import com.serioussem.phgim.school.data.room.entity.DaysOfWeek
 import com.serioussem.phgim.school.domain.model.ClassSchedule
+import com.serioussem.phgim.school.domain.model.DayOfWeek
 import com.serioussem.phgim.school.domain.model.Lesson
-import com.serioussem.phgim.school.domain.model.LessonsOfDay
 
 fun ClassScheduleDataModel.toClassScheduleEntity(): ClassScheduleEntity {
     return ClassScheduleEntity(
@@ -24,8 +24,8 @@ fun LessonDataModel.toLesson(): Lesson {
     )
 }
 
-fun LessonsOfDayDataModel.toLessonsOfDay(): LessonsOfDay {
-    return LessonsOfDay(
+fun LessonsOfDayDataModel.toLessonsOfDay(): DayOfWeek {
+    return DayOfWeek(
         dayIndex = dayIndex,
         lessonsOfDay = lessonsOfDay.map {
             it.toLesson()

@@ -40,7 +40,7 @@ class SplashViewModel @Inject constructor(
         if (!isAuthorized){
             navController.navigate(LOGIN_SCREEN)
         }else{
-            navController.navigate(ScreensRoute.HOME_SCREEN)
+            navController.navigate(ScreensRoute.CLASS_SCHEDULE_SCREEN)
         }
     }
 

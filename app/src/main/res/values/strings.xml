@@ -16,4 +16,8 @@
     <string name="ok">Добре</string>
     <string name="cancel">Відмінити</string>
     <string name="close">Закрити</string>
+    <string name="class_schedule_screen_title">Щоденник</string>
+    <string name="lesson_title">Урок</string>
+    <string name="home_work_title">Домашнє завдання</string>
+    <string name="mark_title">Бал</string>
 </resources>

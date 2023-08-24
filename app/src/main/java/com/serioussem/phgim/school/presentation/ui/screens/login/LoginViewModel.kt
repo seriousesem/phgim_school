@@ -5,11 +5,10 @@ import androidx.navigation.NavController
 import com.serioussem.phgim.school.core.BaseViewModel
 import com.serioussem.phgim.school.data.storage.LocalStorage
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
-import com.serioussem.phgim.school.presentation.ui.navigation.ScreensRoute.HOME_SCREEN
+import com.serioussem.phgim.school.presentation.ui.navigation.ScreensRoute.CLASS_SCHEDULE_SCREEN
 import com.serioussem.phgim.school.utils.LocalStorageKeys.LOGIN_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PASSWORD_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -118,7 +117,7 @@ class LoginViewModel @Inject constructor(
                 } else {
                     try {
                         saveLoginAndPassword()
-                        navController.navigate(HOME_SCREEN)
+                        navController.navigate(CLASS_SCHEDULE_SCREEN)
                     } catch (e: Exception) {
                         setState {
                             copy(
