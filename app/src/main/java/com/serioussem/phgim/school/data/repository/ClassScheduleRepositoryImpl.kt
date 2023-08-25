@@ -1,11 +1,11 @@
 package com.serioussem.phgim.school.data.repository
 import com.serioussem.phgim.school.data.jsoup.JsoupParser
-import com.serioussem.phgim.school.data.mapper.toClassSchedule
+import com.serioussem.phgim.school.data.mapper.toClassScheduleModel
 import com.serioussem.phgim.school.data.mapper.toClassScheduleEntity
 import com.serioussem.phgim.school.data.retrofit.RetrofitService
 import com.serioussem.phgim.school.data.room.dao.ClassScheduleDao
 import com.serioussem.phgim.school.data.storage.LocalStorage
-import com.serioussem.phgim.school.domain.model.ClassSchedule
+import com.serioussem.phgim.school.domain.model.ClassScheduleModel
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
 import com.serioussem.phgim.school.domain.core.Result
 import com.serioussem.phgim.school.utils.ActionOnWeek.NEXT_WEEK
@@ -57,7 +57,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchCurrentWeekClassSchedule(): Result<ClassSchedule> {
+    override suspend fun fetchCurrentWeekClassSchedule(): Result<ClassScheduleModel> {
         return try {
             getCurrentWeek()
             val currentWeekId = storage.loadData<String>(WEEK_ID, defaultValue = "")
@@ -65,35 +65,35 @@ class ClassScheduleRepositoryImpl @Inject constructor(
             val classSchedule = jsoupParser.parseClassSchedule(
                 currentWeek = currentWeekId,
                 classScheduleHtml = classScheduleHtml
-            ).toClassSchedule()
+            ).toClassScheduleModel()
             Result.Success(data = classSchedule)
         } catch (e: Exception) {
             Result.Error(message = e.message ?: "Fetch ClassSchedule error")
         }
     }
 
-    override suspend fun fetchNextWeekClassSchedule(): Result<ClassSchedule> {
+    override suspend fun fetchNextWeekClassSchedule(): Result<ClassScheduleModel> {
         return try {
             val nextWeekId = changeWeekId(NEXT_WEEK)
             val classScheduleHtml = getClassSchedulePageHtml(nextWeekId)
             val classSchedule = jsoupParser.parseClassSchedule(
                 currentWeek = nextWeekId,
                 classScheduleHtml = classScheduleHtml
-            ).toClassSchedule()
+            ).toClassScheduleModel()
             Result.Success(data = classSchedule)
         } catch (e: Exception) {
             Result.Error(message = e.message ?: "Fetch ClassSchedule error")
         }
     }
 
-    override suspend fun fetchPreviousWeekClassSchedule(): Result<ClassSchedule> {
+    override suspend fun fetchPreviousWeekClassSchedule(): Result<ClassScheduleModel> {
         return try {
             val previousWeekId = changeWeekId(PREVIOUS_WEEK)
             val classScheduleHtml = getClassSchedulePageHtml(previousWeekId)
             val classSchedule = jsoupParser.parseClassSchedule(
                 currentWeek = previousWeekId,
                 classScheduleHtml = classScheduleHtml
-            ).toClassSchedule()
+            ).toClassScheduleModel()
             Result.Success(data = classSchedule)
         } catch (e: Exception) {
             Result.Error(message = e.message ?: "Fetch ClassSchedule error")

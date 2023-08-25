@@ -1,16 +1,18 @@
-package com.serioussem.phgim.school.presentation.ui.screens.class_schedule
+package com.serioussem.phgim.school.presentation.ui.screens.lesson
+
 import com.serioussem.phgim.school.core.ViewEvent
 import com.serioussem.phgim.school.core.ViewState
 import com.serioussem.phgim.school.domain.model.DayOfWeekModel
 
-class ClassScheduleScreenContract {
+class LessonScreenContract {
     enum class Event : ViewEvent {
-       PREVIOUS_WEEK, NEXT_WEEK, REFRESH, CLOSE_DIALOG, OPEN_LESSON_SCREEN
+        BACK, OPEN_LINK, CLOSE_DIALOG
     }
+
     data class State(
-        val daysOfWeek: List<DayOfWeekModel> = listOf(),
-        val weekDateRange: String = "",
-        val currentDayIndex: Int = 0,
+        val lessonName: String = "",
+        val homeWork: String = "",
+        val hyperlinks: List<String> = listOf(),
         val isLoading: Boolean = false,
         val error: String? = null
     ) : ViewState

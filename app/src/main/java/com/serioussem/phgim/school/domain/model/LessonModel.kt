@@ -1,5 +1,6 @@
-package com.serioussem.phgim.school.data.model
-data class LessonDataModel (
+package com.serioussem.phgim.school.domain.model
+
+data class LessonModel(
     val lessonName: String,
     val homeWork: String,
     val mark: String

@@ -4,9 +4,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.serioussem.phgim.school.presentation.ui.navigation.ScreensRoute.CLASS_SCHEDULE_SCREEN
+import com.serioussem.phgim.school.presentation.ui.navigation.ScreensRoute.LESSON_SCREEN
 import com.serioussem.phgim.school.presentation.ui.navigation.ScreensRoute.LOGIN_SCREEN
 import com.serioussem.phgim.school.presentation.ui.navigation.ScreensRoute.SPLASH_SCREEN
 import com.serioussem.phgim.school.presentation.ui.screens.class_schedule.ClassScheduleScreen
+import com.serioussem.phgim.school.presentation.ui.screens.lesson.LessonScreen
 import com.serioussem.phgim.school.presentation.ui.screens.login.LoginScreen
 import com.serioussem.phgim.school.presentation.ui.screens.splash.SplashScreen
 
@@ -23,10 +25,14 @@ fun Navigation(){
         composable(CLASS_SCHEDULE_SCREEN){
             ClassScheduleScreen(navController = navController)
         }
+        composable(LESSON_SCREEN){
+            LessonScreen(navController = navController)
+        }
     }
 }
 object ScreensRoute {
     const val SPLASH_SCREEN = "splash_screen"
-    const val CLASS_SCHEDULE_SCREEN = "class_schedule_screen"
     const val LOGIN_SCREEN = "login_screen"
+    const val CLASS_SCHEDULE_SCREEN = "class_schedule_screen"
+    const val LESSON_SCREEN = "lesson_screen"
 }

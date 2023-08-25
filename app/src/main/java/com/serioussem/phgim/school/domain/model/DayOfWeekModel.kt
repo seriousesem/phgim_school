@@ -1,6 +1,6 @@
 package com.serioussem.phgim.school.domain.model
 
-data class DayOfWeek(
+data class DayOfWeekModel(
     val dayIndex: Int,
-    val lessonsOfDay: List<Lesson>
+    val lessonsOfDay: List<LessonModel>
 )

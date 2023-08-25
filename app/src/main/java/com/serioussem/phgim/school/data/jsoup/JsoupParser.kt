@@ -1,8 +1,8 @@
 package com.serioussem.phgim.school.data.jsoup
 
-import com.serioussem.phgim.school.data.model.ClassScheduleDataModel
-import com.serioussem.phgim.school.data.model.LessonDataModel
-import com.serioussem.phgim.school.data.model.LessonsOfDayDataModel
+import com.serioussem.phgim.school.data.dto.ClassScheduleDto
+import com.serioussem.phgim.school.data.dto.LessonDto
+import com.serioussem.phgim.school.data.dto.DaysOfWeekDto
 import com.serioussem.phgim.school.utils.URL
 import com.serioussem.phgim.school.utils.toJsoupDocument
 import org.jsoup.Jsoup
@@ -11,21 +11,21 @@ import javax.inject.Inject
 
 class JsoupParser @Inject constructor(
 ) {
-    fun parseClassSchedule(currentWeek: String, classScheduleHtml: String): ClassScheduleDataModel {
+    fun parseClassSchedule(currentWeek: String, classScheduleHtml: String): ClassScheduleDto {
         return try {
             val classSchedulePageDocument = classScheduleHtml.toJsoupDocument()
             val classScheduleElements = classSchedulePageDocument.select(".db_days")
             val weekTableElements = classScheduleElements.select("tbody")
-            val daysOfWeekList = mutableListOf<LessonsOfDayDataModel>()
+            val daysOfWeekList = mutableListOf<DaysOfWeekDto>()
             for ((index, day) in weekTableElements.withIndex()) {
                 val dayTableElements = day.select("tr")
-                val lessonsOfDayList = mutableListOf<LessonDataModel>()
+                val lessonsOfDayList = mutableListOf<LessonDto>()
                 for (lesson in dayTableElements) {
                     val lessonName = lesson.select("td.lesson > span").text()
-                    val homeWork = lesson.select("td.ht > span").text()
-                    val mark = lesson.select("td.mark > span").text()
+                    val homeWork = lesson.select("td.ht > div.ht-aside").text()
+                    val mark = lesson.select("td.mark > div.mark_box").text()
                     lessonsOfDayList.add(
-                        LessonDataModel(
+                        LessonDto(
                             lessonName = lessonName,
                             homeWork = homeWork,
                             mark = mark
@@ -33,13 +33,13 @@ class JsoupParser @Inject constructor(
                     )
                 }
                 daysOfWeekList.add(
-                    LessonsOfDayDataModel(
+                    DaysOfWeekDto(
                         dayIndex = index,
                         lessonsOfDay = lessonsOfDayList
                     )
                 )
             }
-            ClassScheduleDataModel(currentWeek = currentWeek, daysOfWeek = daysOfWeekList)
+            ClassScheduleDto(currentWeekId = currentWeek, daysOfWeek = daysOfWeekList)
         } catch (e: Exception) {
             throw e
         }

@@ -1,43 +1,43 @@
 package com.serioussem.phgim.school.data.mapper
 
-import com.serioussem.phgim.school.data.model.ClassScheduleDataModel
-import com.serioussem.phgim.school.data.model.LessonDataModel
-import com.serioussem.phgim.school.data.model.LessonsOfDayDataModel
+import com.serioussem.phgim.school.data.dto.ClassScheduleDto
+import com.serioussem.phgim.school.data.dto.LessonDto
+import com.serioussem.phgim.school.data.dto.DaysOfWeekDto
 import com.serioussem.phgim.school.data.room.entity.ClassScheduleEntity
 import com.serioussem.phgim.school.data.room.entity.DaysOfWeek
-import com.serioussem.phgim.school.domain.model.ClassSchedule
-import com.serioussem.phgim.school.domain.model.DayOfWeek
-import com.serioussem.phgim.school.domain.model.Lesson
+import com.serioussem.phgim.school.domain.model.ClassScheduleModel
+import com.serioussem.phgim.school.domain.model.DayOfWeekModel
+import com.serioussem.phgim.school.domain.model.LessonModel
 
-fun ClassScheduleDataModel.toClassScheduleEntity(): ClassScheduleEntity {
+fun ClassScheduleDto.toClassScheduleEntity(): ClassScheduleEntity {
     return ClassScheduleEntity(
-        currentWeek = currentWeek,
+        currentWeekId = currentWeekId,
         daysOfWeek = DaysOfWeek(lessonsOfDayList = daysOfWeek)
     )
 }
 
-fun LessonDataModel.toLesson(): Lesson {
-    return Lesson(
+fun LessonDto.toLessonModel(): LessonModel {
+    return LessonModel(
         lessonName = lessonName,
         homeWork = homeWork,
         mark = mark
     )
 }
 
-fun LessonsOfDayDataModel.toLessonsOfDay(): DayOfWeek {
-    return DayOfWeek(
+fun DaysOfWeekDto.toDayOfWeekModel(): DayOfWeekModel {
+    return DayOfWeekModel(
         dayIndex = dayIndex,
         lessonsOfDay = lessonsOfDay.map {
-            it.toLesson()
+            it.toLessonModel()
         }.toList()
     )
 }
 
-fun ClassScheduleDataModel.toClassSchedule(): ClassSchedule {
-    return ClassSchedule(
-        currentWeek = currentWeek,
+fun ClassScheduleDto.toClassScheduleModel(): ClassScheduleModel {
+    return ClassScheduleModel(
+        currentWeekId = currentWeekId,
         daysOfWeek = daysOfWeek.map {
-            it.toLessonsOfDay()
+            it.toDayOfWeekModel()
         }.toList()
     )
 }
