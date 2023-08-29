@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import com.serioussem.phgim.school.core.BaseViewModel
 import com.serioussem.phgim.school.data.storage.LocalStorage
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
+import com.serioussem.phgim.school.presentation.ui.navigation.Screen
 import com.serioussem.phgim.school.presentation.ui.navigation.ScreensRoute.CLASS_SCHEDULE_SCREEN
 import com.serioussem.phgim.school.utils.LocalStorageKeys.LOGIN_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PASSWORD_KEY
@@ -117,7 +118,7 @@ class LoginViewModel @Inject constructor(
                 } else {
                     try {
                         saveLoginAndPassword()
-                        navController.navigate(CLASS_SCHEDULE_SCREEN)
+                        navController.navigate(Screen.ClassSchedule.route)
                     } catch (e: Exception) {
                         setState {
                             copy(

@@ -8,14 +8,17 @@ import com.serioussem.phgim.school.data.storage.LocalStorage
 import com.serioussem.phgim.school.domain.model.ClassScheduleModel
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
 import com.serioussem.phgim.school.domain.core.Result
+import com.serioussem.phgim.school.utils.ActionOnWeek
 import com.serioussem.phgim.school.utils.ActionOnWeek.NEXT_WEEK
 import com.serioussem.phgim.school.utils.ActionOnWeek.PREVIOUS_WEEK
+import com.serioussem.phgim.school.utils.LocalStorageKeys
 import com.serioussem.phgim.school.utils.LocalStorageKeys.LOGIN_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PASSWORD_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PUPIL_ID
 import com.serioussem.phgim.school.utils.LocalStorageKeys.QUARTER_ID
 import com.serioussem.phgim.school.utils.LocalStorageKeys.WEEK_ID
 import java.time.LocalDate
+import java.time.Month
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -173,20 +176,42 @@ class ClassScheduleRepositoryImpl @Inject constructor(
     }
 
     private fun changeWeekId(actionOnWeek: String): String {
-        val currentWeekId = storage.loadData<String>(WEEK_ID, defaultValue = "")
+        val currentWeekId = storage.loadData<String>(LocalStorageKeys.WEEK_ID, defaultValue = "")
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val date = LocalDate.parse(currentWeekId, formatter)
-        return if (actionOnWeek == NEXT_WEEK) {
-            val newDate = date.plusWeeks(1)
-            val weekId = newDate.format(formatter)
-            storage.saveData(WEEK_ID, weekId)
-            weekId
+        val newDate = if (actionOnWeek == NEXT_WEEK) {
+            date.plusWeeks(1)
         } else {
-            val newDate = date.minusWeeks(1)
-            val weekId = newDate.format(formatter)
-            storage.saveData(WEEK_ID, weekId)
-            weekId
+            date.minusWeeks(1)
         }
+        val newWeekId = calculateWeekId(newDate, actionOnWeek)
+        storage.saveData(LocalStorageKeys.WEEK_ID, newWeekId)
+        return newWeekId
+    }
+
+    private fun calculateWeekId(date: LocalDate, actionOnWeek: String): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        val nextYear = date.year + 1
+        val prevYear = date.year - 1
+
+        val endOfYear = LocalDate.of(date.year, Month.DECEMBER, 31)
+        val startOfYear = LocalDate.of(date.year, Month.JANUARY, 1)
+
+        val newDate = if (actionOnWeek == NEXT_WEEK) {
+            if (date.isAfter(endOfYear)) {
+                LocalDate.of(nextYear, Month.JANUARY, 1)
+            } else {
+                date
+            }
+        } else {
+            if (date.isBefore(startOfYear)) {
+                LocalDate.of(prevYear, Month.DECEMBER, 31)
+            } else {
+                date
+            }
+        }
+        return newDate.format(formatter)
     }
 
 }

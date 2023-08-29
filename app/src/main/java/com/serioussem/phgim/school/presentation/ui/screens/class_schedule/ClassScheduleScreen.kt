@@ -1,6 +1,8 @@
 package com.serioussem.phgim.school.presentation.ui.screens.class_schedule
 
+import android.util.Log.v
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -24,15 +26,15 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,8 +50,10 @@ import com.serioussem.phgim.school.presentation.ui.components.HorizontalDivider
 import com.serioussem.phgim.school.presentation.ui.components.MenuIconButton
 import com.serioussem.phgim.school.presentation.ui.components.ScreenProgress
 import com.serioussem.phgim.school.presentation.ui.components.VerticalDivider
-import com.serioussem.phgim.school.presentation.ui.screens.login.LoginScreenContract
 import com.serioussem.phgim.school.presentation.ui.theme.White99
+import com.serioussem.phgim.school.utils.MapKeys.DAY_INDEX_MAP_KEY
+import com.serioussem.phgim.school.utils.MapKeys.LESSON_INDEX_MAP_KEY
+import com.serioussem.phgim.school.utils.MapKeys.NAV_CONTROLLER_MAP_KEY
 
 @Composable
 fun ClassScheduleScreen(
@@ -61,9 +65,8 @@ fun ClassScheduleScreen(
         topBar = {
             AppTopBar(
                 title = stringResource(id = R.string.class_schedule_screen_title),
-                navigationIcon = {
-                    MenuIconButton()
-                }
+                navigationIcon = {},
+                actionIcon = { MenuIconButton(action = {}) }
             )
         }
     ) { contentPadding ->
@@ -72,7 +75,23 @@ fun ClassScheduleScreen(
                 .padding(top = contentPadding.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            WeekTitleNavigation(title = state.weekDateRange)
+            WeekTitleNavigation(
+                title = state.weekDateRange,
+                isShowNextWeekButton = state.isShowNextWeekButton,
+                isShowPreviousWeekButton = state.isShowPreviousWeekButton,
+                nextWeekButtonAction = {
+                    viewModel.setEvent(
+                        event = ClassScheduleScreenContract.Event.NEXT_WEEK,
+                        data = null
+                    )
+                },
+                previousWeekButtonAction = {
+                    viewModel.setEvent(
+                        event = ClassScheduleScreenContract.Event.PREVIOUS_WEEK,
+                        data = null
+                    )
+                },
+            )
             if (state.isLoading) {
                 ScreenProgress()
             } else if (state.error != null) {
@@ -85,13 +104,18 @@ fun ClassScheduleScreen(
             } else {
                 ClassSchedule(
                     currentDayIndex = state.currentDayIndex,
-                    daysOfWeek = state.daysOfWeek
-                ) {
-                    viewModel.setEvent(
-                        event = ClassScheduleScreenContract.Event.OPEN_LESSON_SCREEN,
-                        data = navController
-                    )
-                }
+                    daysOfWeek = state.daysOfWeek,
+                    openLessonScreen = { dayIndex, lessonModel ->
+                        viewModel.setEvent(
+                            event = ClassScheduleScreenContract.Event.OPEN_LESSON_SCREEN,
+                            data = mapOf(
+                                NAV_CONTROLLER_MAP_KEY to navController,
+                                DAY_INDEX_MAP_KEY to dayIndex,
+                                LESSON_INDEX_MAP_KEY to lessonModel
+                            )
+                        )
+                    },
+                )
             }
         }
     }
@@ -99,38 +123,52 @@ fun ClassScheduleScreen(
 }
 
 @Composable
-private fun WeekTitleNavigation(title: String) {
+private fun WeekTitleNavigation(
+    title: String,
+    isShowNextWeekButton: Boolean,
+    isShowPreviousWeekButton: Boolean,
+    nextWeekButtonAction: () -> Unit,
+    previousWeekButtonAction: () -> Unit,
+) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        IconButton(
-            onClick = { /*TODO*/ },
-            colors = IconButtonDefaults.iconButtonColors(
-                contentColor = DarkGray,
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp)
-            )
+        if (isShowPreviousWeekButton) {
+            IconButton(
+                onClick = previousWeekButtonAction,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = DarkGray,
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.ArrowBack,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        } else {
+            Box(modifier = Modifier.size(32.dp))
         }
         Text(
             text = title
         )
-        IconButton(
-            onClick = { /*TODO*/ },
-            colors = IconButtonDefaults.iconButtonColors(
-                contentColor = DarkGray,
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.ArrowForward,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp)
-            )
+        if (isShowNextWeekButton) {
+            IconButton(
+                onClick = nextWeekButtonAction,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = DarkGray,
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        } else {
+            Box(modifier = Modifier.size(32.dp))
         }
     }
 }
@@ -139,7 +177,7 @@ private fun WeekTitleNavigation(title: String) {
 fun ClassSchedule(
     currentDayIndex: Int,
     daysOfWeek: List<DayOfWeekModel>,
-    openLessonScreen: () -> Unit
+    openLessonScreen: (dayIndex: Int, lessonIndex: Int) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -150,7 +188,7 @@ fun ClassSchedule(
                 dayName = stringArrayResource(id = R.array.days_of_week)[dayIndex],
                 dayIndex = dayIndex,
                 lessonsOfDay = dayOfWeek.lessonsOfDay,
-                openLessonScreen = openLessonScreen
+                openLessonScreen = openLessonScreen,
             )
         }
     }
@@ -161,7 +199,7 @@ fun DayOfWeekCard(
     dayName: String,
     dayIndex: Int,
     lessonsOfDay: List<LessonModel>,
-    openLessonScreen: () -> Unit
+    openLessonScreen: (dayIndex: Int, lessonIndex: Int) -> Unit,
 ) {
     Card(
         modifier = Modifier.padding(vertical = 16.dp),
@@ -213,12 +251,12 @@ fun DayOfWeekCard(
                 )
             }
             HorizontalDivider()
-            for ((lessonIndex, lesson) in lessonsOfDay.withIndex()) {
+            for ((index, lesson) in lessonsOfDay.withIndex()) {
                 LessonItem(
                     dayIndex = dayIndex,
-                    lessonIndex = lessonIndex,
+                    lessonIndex = index,
                     lessonModel = lesson,
-                    openLessonScreen = openLessonScreen
+                    openLessonScreen = openLessonScreen,
                 )
             }
         }
@@ -230,11 +268,11 @@ fun LessonItem(
     dayIndex: Int,
     lessonIndex: Int,
     lessonModel: LessonModel,
-    openLessonScreen: () -> Unit
+    openLessonScreen: (dayIndex: Int, lessonIndex: Int) -> Unit,
 ) {
     Column(modifier = Modifier) {
         OutlinedButton(
-            onClick = openLessonScreen,
+            onClick = { openLessonScreen(dayIndex, lessonIndex) },
             modifier = Modifier.fillMaxWidth(),
             border = null,
             shape = RoundedCornerShape(0.dp),
@@ -249,7 +287,9 @@ fun LessonItem(
             ) {
                 Text(
                     text = lessonModel.lessonName,
-                    modifier = Modifier.weight(0.25f),
+                    modifier = Modifier
+                        .weight(0.25f)
+                        .padding(horizontal = 4.dp),
                     textAlign = TextAlign.Center,
                     maxLines = 2,
                     color = DarkGray
@@ -257,9 +297,12 @@ fun LessonItem(
                 VerticalDivider()
                 Text(
                     text = lessonModel.homeWork,
-                    modifier = Modifier.weight(0.6f),
+                    modifier = Modifier
+                        .weight(0.6f)
+                        .padding(horizontal = 4.dp),
                     textAlign = TextAlign.Center,
-                    maxLines = 2,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     color = DarkGray
                 )
                 VerticalDivider()
@@ -275,3 +318,4 @@ fun LessonItem(
         HorizontalDivider()
     }
 }
+

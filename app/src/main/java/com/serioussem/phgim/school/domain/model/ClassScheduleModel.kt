@@ -4,3 +4,4 @@ data class ClassScheduleModel (
     val currentWeekId: String,
     val daysOfWeek: List<DayOfWeekModel>
 )
+

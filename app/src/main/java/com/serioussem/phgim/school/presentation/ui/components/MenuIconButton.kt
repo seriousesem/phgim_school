@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MenuIconButton() {
+fun MenuIconButton(action: () -> Unit) {
     IconButton(
-        onClick = { /*TODO*/ },
+        onClick = action ,
     )
     {
         Icon(

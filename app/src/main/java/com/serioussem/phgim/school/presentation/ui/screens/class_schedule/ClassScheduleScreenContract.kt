@@ -11,6 +11,8 @@ class ClassScheduleScreenContract {
         val daysOfWeek: List<DayOfWeekModel> = listOf(),
         val weekDateRange: String = "",
         val currentDayIndex: Int = 0,
+        val isShowNextWeekButton: Boolean = false,
+        val isShowPreviousWeekButton: Boolean = false,
         val isLoading: Boolean = false,
         val error: String? = null
     ) : ViewState

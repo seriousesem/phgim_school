@@ -1,5 +1,7 @@
 package com.serioussem.phgim.school.presentation.ui.screens.lesson
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -14,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -26,8 +30,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.serioussem.phgim.school.R
+import com.serioussem.phgim.school.domain.model.LessonModel
 import com.serioussem.phgim.school.presentation.ui.components.AppScaffold
 import com.serioussem.phgim.school.presentation.ui.components.AppTopBar
+import com.serioussem.phgim.school.presentation.ui.components.BackIconButton
 import com.serioussem.phgim.school.presentation.ui.components.ErrorDialog
 import com.serioussem.phgim.school.presentation.ui.components.HorizontalDivider
 import com.serioussem.phgim.school.presentation.ui.components.MenuIconButton
@@ -36,17 +42,23 @@ import com.serioussem.phgim.school.presentation.ui.theme.White99
 
 @Composable
 fun LessonScreen(
+    navController: NavController,
     viewModel: LessonViewModel = hiltViewModel(),
-    navController: NavController
 ) {
 
     val state = viewModel.viewState.value
+    BackHandler(enabled = true) {
+        navController.popBackStack()
+    }
     AppScaffold(
         topBar = {
             AppTopBar(
-                title = stringResource(id = R.string.lesson_title),
+                title = stringResource(id = R.string.home_work_title),
                 navigationIcon = {
-                    MenuIconButton()
+                    BackIconButton(navController = navController)
+                },
+                actionIcon = {
+                    MenuIconButton(action = {})
                 }
             )
         }
@@ -69,7 +81,7 @@ fun LessonScreen(
                 LessonCard(
                     lessonName = state.lessonName,
                     homeWork = state.homeWork,
-                    hyperlinks = state.hyperlinks
+                    hyperlinks = state.hyperlinks,
                 )
             }
         }
@@ -78,7 +90,7 @@ fun LessonScreen(
 }
 
 @Composable
-fun LessonCard(lessonName: String, homeWork: String,  hyperlinks: List<String>) {
+fun LessonCard(lessonName: String, homeWork: String,  hyperlinks: List<String>,) {
     Card(
         modifier = Modifier.padding(vertical = 16.dp),
         colors = CardDefaults.cardColors(
@@ -105,7 +117,7 @@ fun LessonCard(lessonName: String, homeWork: String,  hyperlinks: List<String>) 
                 modifier = Modifier
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
-                fontSize = 14.sp
+                fontSize = 14.sp,
             )
         }
     }
@@ -118,7 +130,7 @@ private fun TextWithHyperlinks(
     linkTextColor: Color = Color.Blue,
     linkTextFontWeight: FontWeight = FontWeight.Medium,
     linkTextDecoration: TextDecoration = TextDecoration.Underline,
-    fontSize: TextUnit = TextUnit.Unspecified
+    fontSize: TextUnit = TextUnit.Unspecified,
 ) {
     val annotatedString = buildAnnotatedString {
         append(fullText)
@@ -156,9 +168,9 @@ private fun TextWithHyperlinks(
     ClickableText(
         modifier = modifier,
         text = annotatedString,
-        onClick = {
+        onClick = { offset ->
             annotatedString
-                .getStringAnnotations("URL", it, it)
+                .getStringAnnotations("URL", offset, offset)
                 .firstOrNull()?.let { stringAnnotation ->
                     uriHandler.openUri(stringAnnotation.item)
                 }

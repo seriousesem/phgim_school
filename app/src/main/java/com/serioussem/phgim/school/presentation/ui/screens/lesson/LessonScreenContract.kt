@@ -6,7 +6,7 @@ import com.serioussem.phgim.school.domain.model.DayOfWeekModel
 
 class LessonScreenContract {
     enum class Event : ViewEvent {
-        BACK, OPEN_LINK, CLOSE_DIALOG
+        OPEN_LINK, CLOSE_DIALOG
     }
 
     data class State(

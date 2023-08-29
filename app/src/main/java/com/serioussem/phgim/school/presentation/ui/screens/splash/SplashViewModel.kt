@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.serioussem.phgim.school.data.storage.LocalStorage
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
+import com.serioussem.phgim.school.presentation.ui.navigation.Screen
 import com.serioussem.phgim.school.presentation.ui.navigation.ScreensRoute
 import com.serioussem.phgim.school.presentation.ui.navigation.ScreensRoute.LOGIN_SCREEN
 import com.serioussem.phgim.school.utils.LocalStorageKeys.LOGIN_KEY
@@ -38,9 +39,9 @@ class SplashViewModel @Inject constructor(
         val isAuthorized = checkAuthorization()
         startLoadingProgress(isAuthorized)
         if (!isAuthorized){
-            navController.navigate(LOGIN_SCREEN)
+            navController.navigate(Screen.Login.route)
         }else{
-            navController.navigate(ScreensRoute.CLASS_SCHEDULE_SCREEN)
+            navController.navigate(Screen.ClassSchedule.route)
         }
     }
 
