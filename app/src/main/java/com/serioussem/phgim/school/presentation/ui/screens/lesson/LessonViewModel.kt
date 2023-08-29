@@ -1,5 +1,4 @@
 package com.serioussem.phgim.school.presentation.ui.screens.lesson
-
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.SavedStateHandle
@@ -8,6 +7,9 @@ import com.serioussem.phgim.school.core.BaseViewModel
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
 import com.serioussem.phgim.school.presentation.ui.navigation.NavigationArgumentsKEY.DAY_INDEX_KEY
 import com.serioussem.phgim.school.presentation.ui.navigation.NavigationArgumentsKEY.LESSON_INDEX_KEY
+import com.serioussem.phgim.school.utils.MapKeys.ANNOTATED_STRING_MAP_KEY
+import com.serioussem.phgim.school.utils.MapKeys.OFFSET_MAP_KEY
+import com.serioussem.phgim.school.utils.MapKeys.URI_HANDLER_MAP_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,8 +42,17 @@ class LessonViewModel @Inject constructor(
             LessonScreenContract.Event.CLOSE_DIALOG -> {
                 closeDialog()
             }
-
-            LessonScreenContract.Event.OPEN_LINK -> {}
+            LessonScreenContract.Event.OPEN_LINK -> {
+                val dataMap = data as Map<*, *>
+                val annotatedString = dataMap[ANNOTATED_STRING_MAP_KEY] as AnnotatedString
+                val offset = dataMap[OFFSET_MAP_KEY] as Int
+                val uriHandler = dataMap[URI_HANDLER_MAP_KEY] as UriHandler
+                openLink(
+                    annotatedString = annotatedString,
+                    offset = offset,
+                    uriHandler = uriHandler
+                )
+            }
         }
     }
 

@@ -8,10 +8,8 @@ import com.serioussem.phgim.school.data.storage.LocalStorage
 import com.serioussem.phgim.school.domain.model.ClassScheduleModel
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
 import com.serioussem.phgim.school.domain.core.Result
-import com.serioussem.phgim.school.utils.ActionOnWeek
 import com.serioussem.phgim.school.utils.ActionOnWeek.NEXT_WEEK
 import com.serioussem.phgim.school.utils.ActionOnWeek.PREVIOUS_WEEK
-import com.serioussem.phgim.school.utils.LocalStorageKeys
 import com.serioussem.phgim.school.utils.LocalStorageKeys.LOGIN_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PASSWORD_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PUPIL_ID
@@ -125,11 +123,11 @@ class ClassScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getClassScheduleQuarterId() {
+    private suspend fun getQuarterId() {
         try {
             val pupilId = storage.loadData<String>(PUPIL_ID, defaultValue = "")
-            val pageResponse = service?.getClassScheduleQuarterPage(pupilId)
-            val quarterId = pageResponse?.let { jsoupParser.parseQuarter(it) }
+            val pageResponse = service?.getQuarterIdPage(pupilId)
+            val quarterId = pageResponse?.let { jsoupParser.parseQuarterId(it) }
             storage.saveData(QUARTER_ID, quarterId ?: "")
         } catch (e: Exception) {
             throw e
@@ -142,7 +140,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
             val pupilId = storage.loadData<String>(PUPIL_ID, defaultValue = "")
             var quarterId = storage.loadData<String>(QUARTER_ID, defaultValue = "")
             if (quarterId.isEmpty()) {
-                getClassScheduleQuarterId()
+                getQuarterId()
                 quarterId = storage.loadData(QUARTER_ID, defaultValue = "")
             }
             val endpointResponse =
@@ -176,7 +174,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
     }
 
     private fun changeWeekId(actionOnWeek: String): String {
-        val currentWeekId = storage.loadData<String>(LocalStorageKeys.WEEK_ID, defaultValue = "")
+        val currentWeekId = storage.loadData<String>(WEEK_ID, defaultValue = "")
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val date = LocalDate.parse(currentWeekId, formatter)
         val newDate = if (actionOnWeek == NEXT_WEEK) {
@@ -185,7 +183,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
             date.minusWeeks(1)
         }
         val newWeekId = calculateWeekId(newDate, actionOnWeek)
-        storage.saveData(LocalStorageKeys.WEEK_ID, newWeekId)
+        storage.saveData(WEEK_ID, newWeekId)
         return newWeekId
     }
 
@@ -200,6 +198,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
 
         val newDate = if (actionOnWeek == NEXT_WEEK) {
             if (date.isAfter(endOfYear)) {
+                storage.saveData(QUARTER_ID, "")
                 LocalDate.of(nextYear, Month.JANUARY, 1)
             } else {
                 date

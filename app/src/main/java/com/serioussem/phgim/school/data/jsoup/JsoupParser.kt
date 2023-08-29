@@ -86,7 +86,7 @@ class JsoupParser @Inject constructor(
         }
     }
 
-    fun parseQuarter(pageResponse: Response<String>): String {
+    fun parseQuarterId(pageResponse: Response<String>): String {
         return try {
             val pageResponseBody = pageResponse.body() ?: ""
             val pageDocument = pageResponseBody.toJsoupDocument()

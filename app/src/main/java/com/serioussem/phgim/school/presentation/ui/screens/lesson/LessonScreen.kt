@@ -1,7 +1,6 @@
 package com.serioussem.phgim.school.presentation.ui.screens.lesson
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -22,7 +21,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -30,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.serioussem.phgim.school.R
-import com.serioussem.phgim.school.domain.model.LessonModel
 import com.serioussem.phgim.school.presentation.ui.components.AppScaffold
 import com.serioussem.phgim.school.presentation.ui.components.AppTopBar
 import com.serioussem.phgim.school.presentation.ui.components.BackIconButton
@@ -39,6 +36,9 @@ import com.serioussem.phgim.school.presentation.ui.components.HorizontalDivider
 import com.serioussem.phgim.school.presentation.ui.components.MenuIconButton
 import com.serioussem.phgim.school.presentation.ui.components.ScreenProgress
 import com.serioussem.phgim.school.presentation.ui.theme.White99
+import com.serioussem.phgim.school.utils.MapKeys.ANNOTATED_STRING_MAP_KEY
+import com.serioussem.phgim.school.utils.MapKeys.OFFSET_MAP_KEY
+import com.serioussem.phgim.school.utils.MapKeys.URI_HANDLER_MAP_KEY
 
 @Composable
 fun LessonScreen(
@@ -82,6 +82,16 @@ fun LessonScreen(
                     lessonName = state.lessonName,
                     homeWork = state.homeWork,
                     hyperlinks = state.hyperlinks,
+                    openLink = { annotatedString, offset, uriHandler ->
+                        viewModel.setEvent(
+                            event = LessonScreenContract.Event.OPEN_LINK,
+                            data = mapOf(
+                                ANNOTATED_STRING_MAP_KEY to annotatedString,
+                                OFFSET_MAP_KEY to offset,
+                                URI_HANDLER_MAP_KEY to uriHandler
+                            )
+                        )
+                    }
                 )
             }
         }
@@ -90,7 +100,12 @@ fun LessonScreen(
 }
 
 @Composable
-fun LessonCard(lessonName: String, homeWork: String,  hyperlinks: List<String>,) {
+fun LessonCard(
+    lessonName: String,
+    homeWork: String,
+    hyperlinks: List<String>,
+    openLink: (annotatedString: AnnotatedString, offset: Int, uriHandler: UriHandler) -> Unit
+) {
     Card(
         modifier = Modifier.padding(vertical = 16.dp),
         colors = CardDefaults.cardColors(
@@ -101,7 +116,7 @@ fun LessonCard(lessonName: String, homeWork: String,  hyperlinks: List<String>,)
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
 
-        ) {
+            ) {
             Text(
                 text = lessonName,
                 modifier = Modifier.padding(vertical = 8.dp),
@@ -118,10 +133,12 @@ fun LessonCard(lessonName: String, homeWork: String,  hyperlinks: List<String>,)
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
                 fontSize = 14.sp,
+                openLink = openLink
             )
         }
     }
 }
+
 @Composable
 private fun TextWithHyperlinks(
     modifier: Modifier = Modifier,
@@ -131,6 +148,7 @@ private fun TextWithHyperlinks(
     linkTextFontWeight: FontWeight = FontWeight.Medium,
     linkTextDecoration: TextDecoration = TextDecoration.Underline,
     fontSize: TextUnit = TextUnit.Unspecified,
+    openLink: (annotatedString: AnnotatedString, offset: Int, uriHandler: UriHandler) -> Unit
 ) {
     val annotatedString = buildAnnotatedString {
         append(fullText)
@@ -169,11 +187,7 @@ private fun TextWithHyperlinks(
         modifier = modifier,
         text = annotatedString,
         onClick = { offset ->
-            annotatedString
-                .getStringAnnotations("URL", offset, offset)
-                .firstOrNull()?.let { stringAnnotation ->
-                    uriHandler.openUri(stringAnnotation.item)
-                }
+            openLink(annotatedString, offset, uriHandler)
         }
     )
 }

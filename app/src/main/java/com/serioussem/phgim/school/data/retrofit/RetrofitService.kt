@@ -24,7 +24,7 @@ interface RetrofitService {
     ): Response<String>
 
     @GET(CLASS_SCHEDULE_ENDPOINT)
-    suspend fun getClassScheduleQuarterPage(@Path("pupilId") pupilId: String): Response<String>
+    suspend fun getQuarterIdPage(@Path("pupilId") pupilId: String): Response<String>
 
     @GET("$CLASS_SCHEDULE_ENDPOINT/quarter/{quarter}")
     suspend fun getClassScheduleCurrentWeekPage(@Path("pupilId") pupilId: String, @Path("quarter") quarterId: String): Response<String>

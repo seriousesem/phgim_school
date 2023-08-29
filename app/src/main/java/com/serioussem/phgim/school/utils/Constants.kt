@@ -29,6 +29,9 @@ object MapKeys {
     const val NAV_CONTROLLER_MAP_KEY = "navController_map_key"
     const val DAY_INDEX_MAP_KEY = "day_index_map_key"
     const val LESSON_INDEX_MAP_KEY = "lesson_index_map_key"
+    const val ANNOTATED_STRING_MAP_KEY = "annotated_string_map_key"
+    const val OFFSET_MAP_KEY = "offset_map_key"
+    const val URI_HANDLER_MAP_KEY = "uri_handler_map_key"
 }
 
 object DateRangeNavigationIconButtonKey {

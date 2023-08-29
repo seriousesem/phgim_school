@@ -275,17 +275,19 @@ class ClassScheduleViewModel @Inject constructor(
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val date = LocalDate.parse(dateStr, formatter)
 
-        val currentDate =  LocalDate.parse(LocalDate.now().format(formatter))
+        val currentDate = LocalDate.parse(LocalDate.now().format(formatter))
         val startDate = LocalDate.of(currentDate.year, Month.SEPTEMBER, 1)
-        val endDate = LocalDate.of(currentDate.year + 1 , Month.MAY, 31)
+        val endDate = LocalDate.of(currentDate.year + 1, Month.MAY, 31)
 
         return when (dateRangeNavigationIconButtonKey) {
             PREVIOUS_WEEK_KEY -> {
                 date.isAfter(startDate)
             }
+
             NEXT_WEEK_KEY -> {
                 date.isBefore(endDate)
             }
+
             else -> false
         }
     }
