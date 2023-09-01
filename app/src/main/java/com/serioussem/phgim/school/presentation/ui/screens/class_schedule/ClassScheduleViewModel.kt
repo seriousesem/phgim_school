@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.serioussem.phgim.school.core.BaseViewModel
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
-import com.serioussem.phgim.school.presentation.ui.navigation.Screen
+import com.serioussem.phgim.school.presentation.navigation.Screen
 import com.serioussem.phgim.school.utils.DateRangeNavigationIconButtonKey.NEXT_WEEK_KEY
 import com.serioussem.phgim.school.utils.DateRangeNavigationIconButtonKey.PREVIOUS_WEEK_KEY
 import com.serioussem.phgim.school.utils.MapKeys

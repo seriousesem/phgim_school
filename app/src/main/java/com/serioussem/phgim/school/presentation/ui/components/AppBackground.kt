@@ -8,8 +8,8 @@ import com.serioussem.phgim.school.R
 
 @Composable
 fun AppBackground(
-    modifier : Modifier
-){
+    modifier: Modifier
+) {
     Image(
         painter = painterResource(id = R.drawable.app_background),
         contentDescription = null,

@@ -5,8 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.serioussem.phgim.school.core.BaseViewModel
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
-import com.serioussem.phgim.school.presentation.ui.navigation.NavigationArgumentsKEY.DAY_INDEX_KEY
-import com.serioussem.phgim.school.presentation.ui.navigation.NavigationArgumentsKEY.LESSON_INDEX_KEY
+import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.DAY_INDEX_KEY
+import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.LESSON_INDEX_KEY
 import com.serioussem.phgim.school.utils.MapKeys.ANNOTATED_STRING_MAP_KEY
 import com.serioussem.phgim.school.utils.MapKeys.OFFSET_MAP_KEY
 import com.serioussem.phgim.school.utils.MapKeys.URI_HANDLER_MAP_KEY

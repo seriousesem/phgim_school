@@ -1,4 +1,5 @@
 package com.serioussem.phgim.school.di
+import com.serioussem.phgim.school.presentation.ui.components.AdMobInterstitial
 import android.content.Context
 import com.serioussem.phgim.school.data.storage.BaseLocalStorage
 import com.serioussem.phgim.school.data.storage.LocalStorage
@@ -17,4 +18,10 @@ object AppModule {
     @Singleton
     fun provideLocalStorage(@ApplicationContext context: Context): BaseLocalStorage =
         LocalStorage(context = context)
+
+    @Singleton
+    @Provides
+    fun provideAdMobInterstitial(
+        @ApplicationContext context: Context
+    ): AdMobInterstitial = AdMobInterstitial(context)
 }

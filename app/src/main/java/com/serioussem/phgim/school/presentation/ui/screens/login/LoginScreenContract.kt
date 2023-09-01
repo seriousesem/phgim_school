@@ -9,6 +9,7 @@ class LoginScreenContract {
     data class State(
         val login: String = "",
         val password: String = "",
+        val isEnabledSignInButton: Boolean = false,
         val isLoading: Boolean = false,
         val error: String? = null
     ) : ViewState

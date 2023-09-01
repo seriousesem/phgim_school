@@ -20,4 +20,7 @@
     <string name="lesson_title">Урок</string>
     <string name="home_work_title">Домашнє завдання</string>
     <string name="mark_title">Бал</string>
+    <string name="splash_inscription">Зачекайте, йде завантаження:</string>
+    <string name="ad_mod_banner_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
 </resources>

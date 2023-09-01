@@ -1,12 +1,10 @@
 package com.serioussem.phgim.school.presentation.ui.screens.login
-
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.serioussem.phgim.school.core.BaseViewModel
 import com.serioussem.phgim.school.data.storage.LocalStorage
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
-import com.serioussem.phgim.school.presentation.ui.navigation.Screen
-import com.serioussem.phgim.school.presentation.ui.navigation.ScreensRoute.CLASS_SCHEDULE_SCREEN
+import com.serioussem.phgim.school.presentation.navigation.Screen
 import com.serioussem.phgim.school.utils.LocalStorageKeys.LOGIN_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PASSWORD_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +21,7 @@ class LoginViewModel @Inject constructor(
         return LoginScreenContract.State(
             login = "",
             password = "",
+            isEnabledSignInButton = false,
             isLoading = false,
             error = null
         )
@@ -54,6 +53,7 @@ class LoginViewModel @Inject constructor(
             copy(
                 login = this.login,
                 password = this.password,
+                isEnabledSignInButton = this.isEnabledSignInButton,
                 isLoading = false,
                 error = null
             )
@@ -65,6 +65,7 @@ class LoginViewModel @Inject constructor(
             copy(
                 login = loginValue,
                 password = this.password,
+                isEnabledSignInButton = getSignInButtonStatus(),
                 isLoading = false,
                 error = null
             )
@@ -76,6 +77,7 @@ class LoginViewModel @Inject constructor(
             copy(
                 login = this.login,
                 password = passwordValue,
+                isEnabledSignInButton = getSignInButtonStatus(),
                 isLoading = false,
                 error = null
             )
@@ -96,6 +98,7 @@ class LoginViewModel @Inject constructor(
             copy(
                 login = this.login,
                 password = this.password,
+                isEnabledSignInButton = this.isEnabledSignInButton,
                 isLoading = true,
                 error = null
             )
@@ -111,6 +114,7 @@ class LoginViewModel @Inject constructor(
                         copy(
                             login = this.login,
                             password = this.password,
+                            isEnabledSignInButton = this.isEnabledSignInButton,
                             isLoading = false,
                             error = response.message
                         )
@@ -124,6 +128,7 @@ class LoginViewModel @Inject constructor(
                             copy(
                                 login = this.login,
                                 password = this.password,
+                                isEnabledSignInButton = this.isEnabledSignInButton,
                                 isLoading = false,
                                 error = e.message
                             )
@@ -136,11 +141,16 @@ class LoginViewModel @Inject constructor(
                 copy(
                     login = this.login,
                     password = this.password,
+                    isEnabledSignInButton = this.isEnabledSignInButton,
                     isLoading = false,
                     error = e.message
                 )
             }
         }
+    }
+
+    private fun getSignInButtonStatus(): Boolean{
+        return viewState.value.login.isNotEmpty() && viewState.value.password.isNotEmpty()
     }
 
 

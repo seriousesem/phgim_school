@@ -1,6 +1,4 @@
 package com.serioussem.phgim.school.di
-
-import com.serioussem.phgim.school.data.repository.ClassScheduleRepositoryImpl
 import com.serioussem.phgim.school.data.repository.ClassScheduleRepositoryMock
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
 import dagger.Binds

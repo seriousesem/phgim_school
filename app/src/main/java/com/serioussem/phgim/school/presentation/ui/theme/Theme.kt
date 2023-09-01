@@ -10,10 +10,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.LightGray
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -29,6 +26,8 @@ private val LightColorScheme = lightColorScheme(
     primary = Green600,
     secondary = Yellow200,
     outline = Gray,
+    background = Green600,
+    surface = Green600
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

@@ -1,9 +1,9 @@
 package com.serioussem.phgim.school.presentation.ui.screens.login
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.serioussem.phgim.school.R
+import com.serioussem.phgim.school.presentation.ui.components.AdMobBanner
 import com.serioussem.phgim.school.presentation.ui.components.AppBackground
 import com.serioussem.phgim.school.presentation.ui.components.ErrorDialog
 import com.serioussem.phgim.school.presentation.ui.components.ScreenProgress
@@ -74,11 +75,16 @@ fun LoginScreen(
                 changePasswordAction = { passwordValue ->
                     viewModel.setEvent(
                         event = LoginScreenContract.Event.CHANGE_PASSWORD,
-                        data = passwordValue
+                        data = passwordValue,
                     )
                 },
-
-                ) { viewModel.setEvent(event = LoginScreenContract.Event.SIGN_IN, data = navController) }
+                isEnabledSignInButton = state.isEnabledSignInButton
+            ) {
+                viewModel.setEvent(
+                    event = LoginScreenContract.Event.SIGN_IN,
+                    data = navController
+                )
+            }
         }
     }
 
@@ -133,7 +139,10 @@ private fun LoginTextField(login: String, changeLoginAction: (String) -> Unit) {
 }
 
 @Composable
-private fun SignInButton(signInButtonAction: () -> Unit) {
+private fun SignInButton(
+    isEnabledSignInButton: Boolean,
+    signInButtonAction: () -> Unit
+) {
     Box(modifier = Modifier.padding(24.dp, 0.dp, 24.dp, 0.dp))
     {
         Button(
@@ -141,7 +150,8 @@ private fun SignInButton(signInButtonAction: () -> Unit) {
             shape = RoundedCornerShape(50.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(50.dp),
+            enabled = isEnabledSignInButton
         ) {
             Text(
                 text = stringResource(id = R.string.sign_in),
@@ -158,21 +168,29 @@ private fun LoginForm(
     changeLoginAction: (String) -> Unit,
     password: String,
     changePasswordAction: (String) -> Unit,
+    isEnabledSignInButton: Boolean,
     signInButtonAction: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.weight(0.5f))
         LoginIcon()
         VerticalSpacing(spacing = 32)
         LoginTextField(login = login, changeLoginAction = changeLoginAction)
         VerticalSpacing(spacing = 24)
         PasswordTextField(password = password, changePasswordAction = changePasswordAction)
         VerticalSpacing(spacing = 32)
-        SignInButton(signInButtonAction)
-        VerticalSpacing(spacing = 120)
+        SignInButton(
+            isEnabledSignInButton = isEnabledSignInButton,
+            signInButtonAction = signInButtonAction
+        )
+        Spacer(modifier = Modifier.weight(1.0f))
+        AdMobBanner()
     }
 }
 
