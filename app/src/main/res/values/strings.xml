@@ -21,8 +21,8 @@
     <string name="home_work_title">Домашнє завдання</string>
     <string name="mark_title">Бал</string>
     <string name="splash_inscription">Зачекайте, йде завантаження:</string>
-    <string name="ad_mod_banner_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="ad_mod_banner_id">ca-app-pub-6156568051462771/1962348815</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-6156568051462771/1685100925</string>
     <string name="network_connection_error_message">Відсутнє підключення до інтернету</string>
     <string name="server_connection_error_message">Невдалося підключитися до сервера, спробуйте ще раз</string>
     <string name="response_error_message">Невдалося підключитися до сервера, спробуйте ще раз</string>

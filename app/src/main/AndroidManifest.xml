@@ -20,7 +20,7 @@
         tools:targetApi="34">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-6156568051462771~7320570986"/>
         <activity
             android:name=".app.MainActivity"
             android:exported="true"
