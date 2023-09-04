@@ -8,6 +8,20 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("/Users/MAC/phgim_school.jks")
+            storePassword = "semdev241287"
+            keyAlias = "PhgimSchool"
+            keyPassword = "semdev241287"
+        }
+        create("release") {
+            storeFile = file("/Users/MAC/phgim_school.jks")
+            keyPassword = "semdev241287"
+            storePassword = "semdev241287"
+            keyAlias = "PhgimSchool"
+        }
+    }
     namespace = "com.serioussem.phgim.school"
     compileSdk = 34
 
@@ -16,7 +30,7 @@ android {
         minSdk = 27
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -31,8 +45,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -78,8 +95,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.47")
-    kapt("com.google.dagger:hilt-compiler:2.47")
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-compiler:2.48")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     // Room
     implementation ("androidx.room:room-runtime:2.5.2")
@@ -94,10 +111,10 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
     implementation("com.squareup.okhttp3:okhttp-urlconnection:5.0.0-alpha.11")
     // Coroutines
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     // Jsoup
-    implementation ("org.jsoup:jsoup:1.14.3")
+    implementation ("org.jsoup:jsoup:1.16.1")
 //    // Google
     implementation ("com.google.android.gms:play-services-ads:22.3.0")
 //    implementation ("com.google.firebase:firebase-bom:32.2.2")

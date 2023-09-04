@@ -1,4 +1,5 @@
 package com.serioussem.phgim.school.presentation.ui.screens.login
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +43,7 @@ import com.serioussem.phgim.school.presentation.ui.components.AppBackground
 import com.serioussem.phgim.school.presentation.ui.components.ErrorDialog
 import com.serioussem.phgim.school.presentation.ui.components.ScreenProgress
 import com.serioussem.phgim.school.presentation.ui.components.VerticalSpacing
+import com.serioussem.phgim.school.utils.findActivity
 import androidx.compose.material3.Text as Text
 
 @Composable
@@ -49,7 +52,10 @@ fun LoginScreen(
     navController: NavController
 ) {
     val state = viewModel.viewState.value
-
+    val context = LocalContext.current
+    BackHandler(onBack = {
+        context.findActivity()?.finish()
+    })
     Box(
         modifier = Modifier
             .fillMaxSize(),

@@ -1,4 +1,5 @@
 package com.serioussem.phgim.school.presentation.ui.screens.splash
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ fun SplashScreen(
     viewModel: SplashViewModel = hiltViewModel(),
     navController: NavController,
 ) {
+    BackHandler(onBack = {})
 
     LaunchedEffect(key1 = false) {
         viewModel.navigateToNextScreen(navController)

@@ -1,4 +1,5 @@
 package com.serioussem.phgim.school.presentation.ui.screens.class_schedule
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,10 +49,10 @@ import com.serioussem.phgim.school.presentation.ui.components.MenuIconButton
 import com.serioussem.phgim.school.presentation.ui.components.ScreenProgress
 import com.serioussem.phgim.school.presentation.ui.components.VerticalDivider
 import com.serioussem.phgim.school.presentation.ui.theme.White99
-import com.serioussem.phgim.school.utils.MapKeys.CURRENT_WEEK_ID_MAP_KEY
 import com.serioussem.phgim.school.utils.MapKeys.DAY_INDEX_MAP_KEY
 import com.serioussem.phgim.school.utils.MapKeys.LESSON_INDEX_MAP_KEY
 import com.serioussem.phgim.school.utils.MapKeys.NAV_CONTROLLER_MAP_KEY
+import com.serioussem.phgim.school.utils.findActivity
 
 @Composable
 fun ClassScheduleScreen(
@@ -58,6 +60,10 @@ fun ClassScheduleScreen(
     navController: NavController
 ) {
     val state = viewModel.viewState.value
+    val context = LocalContext.current
+    BackHandler(onBack = {
+        context.findActivity()?.finish()
+    })
     AppScaffold(
         topBar = {
             AppTopBar(
