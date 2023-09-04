@@ -21,7 +21,7 @@ class SplashViewModel @Inject constructor(
         private set
 
     companion object {
-        const val PROGRESS_DELAY = 25L
+        const val PROGRESS_DELAY = 35L
     }
 
     suspend fun navigateToNextScreen(navController: NavController) {

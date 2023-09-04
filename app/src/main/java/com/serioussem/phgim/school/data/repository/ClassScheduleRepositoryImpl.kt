@@ -199,9 +199,8 @@ class ClassScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getClassScheduleEndpoint(weekId: String): String {
+    private fun getClassScheduleEndpoint(weekId: String): String {
         try {
-//            getCurrentWeek()
             val pupilId = storage.loadData<String>(PUPIL_ID, defaultValue = "")
             val quarterId = storage.loadData<String>(QUARTER_ID, defaultValue = "")
             return "pupil/$pupilId/dnevnik/quarter/$quarterId/week/$weekId"
