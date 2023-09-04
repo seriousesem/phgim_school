@@ -13,7 +13,7 @@ interface ClassScheduleDao {
     @Insert(onConflict = REPLACE)
     suspend fun insertClassSchedule(classScheduleEntity: ClassScheduleEntity)
 
-    @Query("SELECT * FROM $CLASS_SCHEDULE_TABLE_NAME WHERE currentWeekId = :currentWeek")
-    suspend fun selectClassScheduleForWeek(currentWeek: String): ClassScheduleEntity
+    @Query("SELECT * FROM $CLASS_SCHEDULE_TABLE_NAME WHERE currentWeekId = :currentWeekId")
+    suspend fun selectClassByCurrentWeekId(currentWeekId: String): ClassScheduleEntity
 
 }

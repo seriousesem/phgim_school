@@ -5,7 +5,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.serioussem.phgim.school.data.storage.LocalStorage
-import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
 import com.serioussem.phgim.school.presentation.navigation.Screen
 import com.serioussem.phgim.school.utils.LocalStorageKeys.LOGIN_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PASSWORD_KEY
@@ -15,31 +14,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val repository: ClassScheduleRepository,
     private val storage: LocalStorage,
 ) : ViewModel() {
 
     var loadingProgressState by mutableFloatStateOf(0.0F)
         private set
 
-    init {
-
-        loadAndSaveClassSchedule()
-    }
-
-    private fun loadAndSaveClassSchedule() {
-        try {
-            //        viewModelScope.launch {
-//            repository.loadAndSaveClassSchedule()
-//        }
-        } catch (e: Exception) {
-            throw e
-        }
+    companion object {
+        const val PROGRESS_DELAY = 25L
     }
 
     suspend fun navigateToNextScreen(navController: NavController) {
         val isAuthorized = checkAuthorization()
-        startLoadingProgress(isAuthorized)
+        startLoadingProgress()
         if (!isAuthorized) {
             navController.navigate(Screen.Login.route)
         } else {
@@ -57,11 +44,10 @@ class SplashViewModel @Inject constructor(
         }
     }
 
-    private suspend fun startLoadingProgress(authorizationStatus: Boolean) {
-        val progressDelay = if (authorizationStatus) 100L else 25L
+    private suspend fun startLoadingProgress() {
         while (loadingProgressState < 1) {
             loadingProgressState += 0.01F
-            delay(progressDelay)
+            delay(PROGRESS_DELAY)
         }
     }
 

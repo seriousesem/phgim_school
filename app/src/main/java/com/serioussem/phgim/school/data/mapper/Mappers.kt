@@ -36,8 +36,17 @@ fun DaysOfWeekDto.toDayOfWeekModel(): DayOfWeekModel {
 fun ClassScheduleDto.toClassScheduleModel(): ClassScheduleModel {
     return ClassScheduleModel(
         currentWeekId = currentWeekId,
-        daysOfWeek = daysOfWeek.map {
-            it.toDayOfWeekModel()
+        daysOfWeek = daysOfWeek.map { daysOfWeekDto ->
+            daysOfWeekDto.toDayOfWeekModel()
+        }.toList()
+    )
+}
+
+fun ClassScheduleEntity.toClassScheduleModel(): ClassScheduleModel {
+    return ClassScheduleModel(
+        currentWeekId = currentWeekId,
+        daysOfWeek = daysOfWeek.lessonsOfDayList.map { daysOfWeekDto ->
+            daysOfWeekDto.toDayOfWeekModel()
         }.toList()
     )
 }

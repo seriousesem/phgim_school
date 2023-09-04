@@ -3,6 +3,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.serioussem.phgim.school.core.BaseViewModel
 import com.serioussem.phgim.school.data.storage.LocalStorage
+import com.serioussem.phgim.school.domain.core.Result
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
 import com.serioussem.phgim.school.presentation.navigation.Screen
 import com.serioussem.phgim.school.utils.LocalStorageKeys.LOGIN_KEY
@@ -104,35 +105,38 @@ class LoginViewModel @Inject constructor(
             )
         }
         try {
-            val login = viewState.value.login
-            val password = viewState.value.password
             viewModelScope.launch {
-                val response = repository.signIn(login, password)
-                val isSuccessfulLogin = response.data as Boolean
-                if (!isSuccessfulLogin) {
+                try {
+                    val login = viewState.value.login
+                    val password = viewState.value.password
+                    when (val responseResult = repository.signIn(login, password)) {
+
+                        is Result.Success -> {
+                            saveLoginAndPassword()
+                            navController.navigate(Screen.ClassSchedule.route)
+                        }
+
+                        is Result.Error -> {
+                            setState {
+                                copy(
+                                    login = this.login,
+                                    password = this.password,
+                                    isEnabledSignInButton = this.isEnabledSignInButton,
+                                    isLoading = false,
+                                    error = responseResult.message
+                                )
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
                     setState {
                         copy(
                             login = this.login,
                             password = this.password,
                             isEnabledSignInButton = this.isEnabledSignInButton,
                             isLoading = false,
-                            error = response.message
+                            error = e.message
                         )
-                    }
-                } else {
-                    try {
-                        saveLoginAndPassword()
-                        navController.navigate(Screen.ClassSchedule.route)
-                    } catch (e: Exception) {
-                        setState {
-                            copy(
-                                login = this.login,
-                                password = this.password,
-                                isEnabledSignInButton = this.isEnabledSignInButton,
-                                isLoading = false,
-                                error = e.message
-                            )
-                        }
                     }
                 }
             }
@@ -149,7 +153,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun getSignInButtonStatus(): Boolean{
+    private fun getSignInButtonStatus(): Boolean {
         return viewState.value.login.isNotEmpty() && viewState.value.password.isNotEmpty()
     }
 

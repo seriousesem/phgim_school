@@ -20,11 +20,6 @@ class ClassScheduleRepositoryMock @Inject constructor(
     override suspend fun signIn(login: String, password: String): Result<Boolean> {
         TODO("Not yet implemented")
     }
-
-    override suspend fun loadAndSaveClassSchedule(): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun fetchCurrentWeekClassSchedule(): Result<ClassScheduleModel> {
         return try {
             storage.saveData(LocalStorageKeys.WEEK_ID, "2023-08-28" ?: "")
@@ -518,6 +513,10 @@ class ClassScheduleRepositoryMock @Inject constructor(
         } catch (e: Exception) {
             Result.Error(message = "Помилка завантаження щоденника")
         }
+    }
+
+    override suspend fun fetchClassScheduleByCurrentWeekId(currentWeekId: String): Result<ClassScheduleModel> {
+        TODO("Not yet implemented")
     }
 
     private fun changeWeekId(actionOnWeek: String): String {

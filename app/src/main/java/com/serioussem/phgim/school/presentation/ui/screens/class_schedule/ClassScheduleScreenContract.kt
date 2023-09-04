@@ -8,6 +8,7 @@ class ClassScheduleScreenContract {
        PREVIOUS_WEEK, NEXT_WEEK, REFRESH, CLOSE_DIALOG, OPEN_LESSON_SCREEN
     }
     data class State(
+        val currentWeekId: String = "",
         val daysOfWeek: List<DayOfWeekModel> = listOf(),
         val weekDateRange: String = "",
         val currentDayIndex: Int = 0,

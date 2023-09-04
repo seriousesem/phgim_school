@@ -47,6 +47,7 @@ import com.serioussem.phgim.school.presentation.ui.components.MenuIconButton
 import com.serioussem.phgim.school.presentation.ui.components.ScreenProgress
 import com.serioussem.phgim.school.presentation.ui.components.VerticalDivider
 import com.serioussem.phgim.school.presentation.ui.theme.White99
+import com.serioussem.phgim.school.utils.MapKeys.CURRENT_WEEK_ID_MAP_KEY
 import com.serioussem.phgim.school.utils.MapKeys.DAY_INDEX_MAP_KEY
 import com.serioussem.phgim.school.utils.MapKeys.LESSON_INDEX_MAP_KEY
 import com.serioussem.phgim.school.utils.MapKeys.NAV_CONTROLLER_MAP_KEY
@@ -107,7 +108,7 @@ fun ClassScheduleScreen(
                             data = mapOf(
                                 NAV_CONTROLLER_MAP_KEY to navController,
                                 DAY_INDEX_MAP_KEY to dayIndex,
-                                LESSON_INDEX_MAP_KEY to lessonModel
+                                LESSON_INDEX_MAP_KEY to lessonModel,
                             )
                         )
                     },

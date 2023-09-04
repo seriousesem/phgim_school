@@ -1,4 +1,5 @@
 package com.serioussem.phgim.school.di
+
 import com.serioussem.phgim.school.data.retrofit.RetrofitService
 import com.serioussem.phgim.school.utils.URL.BASE_URL
 import dagger.Module
@@ -34,15 +35,19 @@ object RetrofitModule {
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL)
         return cookieManager
     }
+
     @Provides
     @Singleton
-    fun provideJavaNetCookieJar(cookieManager: CookieManager): JavaNetCookieJar{
-        return  JavaNetCookieJar(cookieManager)
+    fun provideJavaNetCookieJar(cookieManager: CookieManager): JavaNetCookieJar {
+        return JavaNetCookieJar(cookieManager)
     }
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor, javaNetCookieJar: JavaNetCookieJar): OkHttpClient =
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        javaNetCookieJar: JavaNetCookieJar
+    ): OkHttpClient =
         OkHttpClient.Builder().apply {
             addInterceptor(loggingInterceptor)
             connectTimeout(30, TimeUnit.SECONDS)
@@ -53,7 +58,6 @@ object RetrofitModule {
     @Provides
     @Singleton
     fun provideRetrofitService(okHttpClient: OkHttpClient): RetrofitService {
-
         return Retrofit.Builder().apply {
             baseUrl(BASE_URL)
             addConverterFactory(ScalarsConverterFactory.create())

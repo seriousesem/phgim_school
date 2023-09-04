@@ -1,10 +1,13 @@
 package com.serioussem.phgim.school.presentation.ui.screens.lesson
+
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.serioussem.phgim.school.core.BaseViewModel
+import com.serioussem.phgim.school.domain.core.Result
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
+import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.CURRENT_WEEK_ID_KEY
 import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.DAY_INDEX_KEY
 import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.LESSON_INDEX_KEY
 import com.serioussem.phgim.school.utils.MapKeys.ANNOTATED_STRING_MAP_KEY
@@ -22,6 +25,7 @@ class LessonViewModel @Inject constructor(
 
     private val dayIndex: Int = checkNotNull(savedStateHandle[DAY_INDEX_KEY])
     private val lessonIndex: Int = checkNotNull(savedStateHandle[LESSON_INDEX_KEY])
+    private val currentWeekId: String = checkNotNull(savedStateHandle[CURRENT_WEEK_ID_KEY])
 
     init {
         fetchLesson()
@@ -42,6 +46,7 @@ class LessonViewModel @Inject constructor(
             LessonScreenContract.Event.CLOSE_DIALOG -> {
                 closeDialog()
             }
+
             LessonScreenContract.Event.OPEN_LINK -> {
                 val dataMap = data as Map<*, *>
                 val annotatedString = dataMap[ANNOTATED_STRING_MAP_KEY] as AnnotatedString
@@ -68,18 +73,50 @@ class LessonViewModel @Inject constructor(
         }
         try {
             viewModelScope.launch {
-                val classSchedule = repository.fetchCurrentWeekClassSchedule().data
-                val lessonModel =
-                    classSchedule?.daysOfWeek?.get(dayIndex)?.lessonsOfDay?.get(lessonIndex)
-                val hyperlinks = getHyperLinks(lessonModel?.homeWork ?: "")
-                setState {
-                    copy(
-                        lessonName = lessonModel?.lessonName ?: "",
-                        homeWork = lessonModel?.homeWork ?: "",
-                        hyperlinks = hyperlinks,
-                        isLoading = false,
-                        error = null
-                    )
+                try {
+                    when (val responseResult =
+                        repository.fetchClassScheduleByCurrentWeekId(currentWeekId = currentWeekId)) {
+
+                        is Result.Success -> {
+                            val classSchedule = responseResult.data
+                            val lessonModel =
+                                classSchedule?.daysOfWeek?.get(dayIndex)?.lessonsOfDay?.get(
+                                    lessonIndex
+                                )
+                            val hyperlinks = getHyperLinks(lessonModel?.homeWork ?: "")
+                            setState {
+                                copy(
+                                    lessonName = lessonModel?.lessonName ?: "",
+                                    homeWork = lessonModel?.homeWork ?: "",
+                                    hyperlinks = hyperlinks,
+                                    isLoading = false,
+                                    error = null
+                                )
+                            }
+                        }
+
+                        is Result.Error -> {
+                            setState {
+                                copy(
+                                    lessonName = this.lessonName,
+                                    homeWork = this.homeWork,
+                                    hyperlinks = this.hyperlinks,
+                                    isLoading = false,
+                                    error = responseResult.message
+                                )
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    setState {
+                        copy(
+                            lessonName = this.lessonName,
+                            homeWork = this.homeWork,
+                            hyperlinks = this.hyperlinks,
+                            isLoading = false,
+                            error = e.message
+                        )
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -89,7 +126,7 @@ class LessonViewModel @Inject constructor(
                     homeWork = this.homeWork,
                     hyperlinks = this.hyperlinks,
                     isLoading = false,
-                    error = "Не вдалося завантажити інформацію по уроку"
+                    error = e.message
                 )
             }
         }

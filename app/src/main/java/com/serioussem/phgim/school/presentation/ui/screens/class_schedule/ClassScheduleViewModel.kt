@@ -3,11 +3,15 @@ package com.serioussem.phgim.school.presentation.ui.screens.class_schedule
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.serioussem.phgim.school.core.BaseViewModel
+import com.serioussem.phgim.school.domain.core.Result
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
 import com.serioussem.phgim.school.presentation.navigation.Screen
 import com.serioussem.phgim.school.utils.DateRangeNavigationIconButtonKey.NEXT_WEEK_KEY
 import com.serioussem.phgim.school.utils.DateRangeNavigationIconButtonKey.PREVIOUS_WEEK_KEY
 import com.serioussem.phgim.school.utils.MapKeys
+import com.serioussem.phgim.school.utils.MapKeys.CURRENT_WEEK_ID_MAP_KEY
+import com.serioussem.phgim.school.utils.MapKeys.DAY_INDEX_MAP_KEY
+import com.serioussem.phgim.school.utils.MapKeys.LESSON_INDEX_MAP_KEY
 import com.serioussem.phgim.school.utils.MapKeys.NAV_CONTROLLER_MAP_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -29,6 +33,7 @@ class ClassScheduleViewModel @Inject constructor(
 
     override fun setInitialState(): ClassScheduleScreenContract.State {
         return ClassScheduleScreenContract.State(
+            currentWeekId = "",
             daysOfWeek = listOf(),
             weekDateRange = "",
             currentDayIndex = 0,
@@ -60,12 +65,12 @@ class ClassScheduleViewModel @Inject constructor(
             ClassScheduleScreenContract.Event.OPEN_LESSON_SCREEN -> {
                 val dataMap = data as Map<*, *>
                 val navController = dataMap[NAV_CONTROLLER_MAP_KEY] as NavController
-                val dayIndex = dataMap[MapKeys.DAY_INDEX_MAP_KEY] as Int
-                val lessonIndex = dataMap[MapKeys.LESSON_INDEX_MAP_KEY] as Int
+                val dayIndex = dataMap[DAY_INDEX_MAP_KEY] as Int
+                val lessonIndex = dataMap[LESSON_INDEX_MAP_KEY] as Int
                 openLessonScreen(
                     navController = navController,
                     dayIndex = dayIndex,
-                    lessonIndex = lessonIndex
+                    lessonIndex = lessonIndex,
                 )
             }
         }
@@ -74,6 +79,7 @@ class ClassScheduleViewModel @Inject constructor(
     private fun closeDialog() {
         setState {
             copy(
+                currentWeekId = this.currentWeekId,
                 daysOfWeek = this.daysOfWeek,
                 weekDateRange = this.weekDateRange,
                 currentDayIndex = this.currentDayIndex,
@@ -88,6 +94,7 @@ class ClassScheduleViewModel @Inject constructor(
     private fun fetchCurrentClassSchedule() {
         setState {
             copy(
+                currentWeekId = this.currentWeekId,
                 daysOfWeek = this.daysOfWeek,
                 weekDateRange = this.weekDateRange,
                 currentDayIndex = this.currentDayIndex,
@@ -99,31 +106,70 @@ class ClassScheduleViewModel @Inject constructor(
         }
         try {
             viewModelScope.launch {
-                val classSchedule = repository.fetchCurrentWeekClassSchedule().data
-                val daysOfWeek = classSchedule?.daysOfWeek ?: listOf()
-                val weekDateRange = generateWeekDateRange(classSchedule?.currentWeekId ?: "")
-                val currentDayIndex = getCurrentDayIndex()
-                setState {
-                    copy(
-                        daysOfWeek = daysOfWeek,
-                        weekDateRange = weekDateRange,
-                        currentDayIndex = currentDayIndex,
-                        isShowNextWeekButton = showDateRangeNavigationIconButton(
-                            dateStr = classSchedule?.currentWeekId ?: "",
-                            dateRangeNavigationIconButtonKey = NEXT_WEEK_KEY
-                        ),
-                        isShowPreviousWeekButton = showDateRangeNavigationIconButton(
-                            dateStr = classSchedule?.currentWeekId ?: "",
-                            dateRangeNavigationIconButtonKey = PREVIOUS_WEEK_KEY
-                        ),
-                        isLoading = false,
-                        error = null
-                    )
+                try {
+                    when (val responseResult = repository.fetchCurrentWeekClassSchedule()) {
+
+                        is Result.Success -> {
+                            val classSchedule = responseResult.data
+                            val daysOfWeek = classSchedule?.daysOfWeek ?: listOf()
+
+                            val weekDateRange =
+                                generateWeekDateRange(classSchedule?.currentWeekId ?: "")
+                            val currentDayIndex = getCurrentDayIndex()
+                            setState {
+                                copy(
+                                    currentWeekId = classSchedule?.currentWeekId ?: "",
+                                    daysOfWeek = daysOfWeek,
+                                    weekDateRange = weekDateRange,
+                                    currentDayIndex = currentDayIndex,
+                                    isShowNextWeekButton = showDateRangeNavigationIconButton(
+                                        dateStr = classSchedule?.currentWeekId ?: "",
+                                        dateRangeNavigationIconButtonKey = NEXT_WEEK_KEY
+                                    ),
+                                    isShowPreviousWeekButton = showDateRangeNavigationIconButton(
+                                        dateStr = classSchedule?.currentWeekId ?: "",
+                                        dateRangeNavigationIconButtonKey = PREVIOUS_WEEK_KEY
+                                    ),
+                                    isLoading = false,
+                                    error = null
+                                )
+                            }
+                        }
+
+                        is Result.Error -> {
+                            setState {
+                                copy(
+                                    currentWeekId = "",
+                                    daysOfWeek = listOf(),
+                                    weekDateRange = "",
+                                    currentDayIndex = 0,
+                                    isShowNextWeekButton = false,
+                                    isShowPreviousWeekButton = false,
+                                    isLoading = false,
+                                    error = responseResult.message
+                                )
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    setState {
+                        copy(
+                            currentWeekId = "",
+                            daysOfWeek = listOf(),
+                            weekDateRange = "",
+                            currentDayIndex = 0,
+                            isShowNextWeekButton = false,
+                            isShowPreviousWeekButton = false,
+                            isLoading = false,
+                            error = e.message
+                        )
+                    }
                 }
             }
         } catch (e: Exception) {
             setState {
                 copy(
+                    currentWeekId = "",
                     daysOfWeek = listOf(),
                     weekDateRange = "",
                     currentDayIndex = 0,
@@ -134,11 +180,13 @@ class ClassScheduleViewModel @Inject constructor(
                 )
             }
         }
+
     }
 
     private fun fetchPreviousWeekClassSchedule() {
         setState {
             copy(
+                currentWeekId = this.currentWeekId,
                 daysOfWeek = this.daysOfWeek,
                 weekDateRange = this.weekDateRange,
                 currentDayIndex = this.currentDayIndex,
@@ -150,31 +198,69 @@ class ClassScheduleViewModel @Inject constructor(
         }
         try {
             viewModelScope.launch {
-                val classSchedule = repository.fetchPreviousWeekClassSchedule().data
-                val daysOfWeek = classSchedule?.daysOfWeek ?: listOf()
-                val weekDateRange = generateWeekDateRange(classSchedule?.currentWeekId ?: "")
-                val currentDayIndex = getCurrentDayIndex()
-                setState {
-                    copy(
-                        daysOfWeek = daysOfWeek,
-                        weekDateRange = weekDateRange,
-                        currentDayIndex = currentDayIndex,
-                        isShowNextWeekButton = showDateRangeNavigationIconButton(
-                            dateStr = classSchedule?.currentWeekId ?: "",
-                            dateRangeNavigationIconButtonKey = NEXT_WEEK_KEY
-                        ),
-                        isShowPreviousWeekButton = showDateRangeNavigationIconButton(
-                            dateStr = classSchedule?.currentWeekId ?: "",
-                            dateRangeNavigationIconButtonKey = PREVIOUS_WEEK_KEY
-                        ),
-                        isLoading = false,
-                        error = null
-                    )
+                try {
+                    when (val responseResult = repository.fetchPreviousWeekClassSchedule()) {
+
+                        is Result.Success -> {
+                            val classSchedule = responseResult.data
+                            val daysOfWeek = classSchedule?.daysOfWeek ?: listOf()
+                            val weekDateRange =
+                                generateWeekDateRange(classSchedule?.currentWeekId ?: "")
+                            val currentDayIndex = getCurrentDayIndex()
+                            setState {
+                                copy(
+                                    currentWeekId = classSchedule?.currentWeekId ?: "",
+                                    daysOfWeek = daysOfWeek,
+                                    weekDateRange = weekDateRange,
+                                    currentDayIndex = currentDayIndex,
+                                    isShowNextWeekButton = showDateRangeNavigationIconButton(
+                                        dateStr = classSchedule?.currentWeekId ?: "",
+                                        dateRangeNavigationIconButtonKey = NEXT_WEEK_KEY
+                                    ),
+                                    isShowPreviousWeekButton = showDateRangeNavigationIconButton(
+                                        dateStr = classSchedule?.currentWeekId ?: "",
+                                        dateRangeNavigationIconButtonKey = PREVIOUS_WEEK_KEY
+                                    ),
+                                    isLoading = false,
+                                    error = null
+                                )
+                            }
+                        }
+
+                        is Result.Error -> {
+                            setState {
+                                copy(
+                                    currentWeekId = this.currentWeekId,
+                                    daysOfWeek = this.daysOfWeek,
+                                    weekDateRange = this.weekDateRange,
+                                    currentDayIndex = this.currentDayIndex,
+                                    isShowNextWeekButton = this.isShowNextWeekButton,
+                                    isShowPreviousWeekButton = this.isShowPreviousWeekButton,
+                                    isLoading = false,
+                                    error = responseResult.message
+                                )
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    setState {
+                        copy(
+                            currentWeekId = this.currentWeekId,
+                            daysOfWeek = this.daysOfWeek,
+                            weekDateRange = this.weekDateRange,
+                            currentDayIndex = this.currentDayIndex,
+                            isShowNextWeekButton = this.isShowNextWeekButton,
+                            isShowPreviousWeekButton = this.isShowPreviousWeekButton,
+                            isLoading = false,
+                            error = e.message
+                        )
+                    }
                 }
             }
         } catch (e: Exception) {
             setState {
                 copy(
+                    currentWeekId = this.currentWeekId,
                     daysOfWeek = this.daysOfWeek,
                     weekDateRange = this.weekDateRange,
                     currentDayIndex = this.currentDayIndex,
@@ -190,6 +276,7 @@ class ClassScheduleViewModel @Inject constructor(
     private fun fetchNextWeekClassSchedule() {
         setState {
             copy(
+                currentWeekId = this.currentWeekId,
                 daysOfWeek = this.daysOfWeek,
                 weekDateRange = this.weekDateRange,
                 currentDayIndex = this.currentDayIndex,
@@ -201,31 +288,68 @@ class ClassScheduleViewModel @Inject constructor(
         }
         try {
             viewModelScope.launch {
-                val classSchedule = repository.fetchNextWeekClassSchedule().data
-                val daysOfWeek = classSchedule?.daysOfWeek ?: listOf()
-                val weekDateRange = generateWeekDateRange(classSchedule?.currentWeekId ?: "")
-                val currentDayIndex = getCurrentDayIndex()
-                setState {
-                    copy(
-                        daysOfWeek = daysOfWeek,
-                        weekDateRange = weekDateRange,
-                        currentDayIndex = currentDayIndex,
-                        isShowNextWeekButton = showDateRangeNavigationIconButton(
-                            dateStr = classSchedule?.currentWeekId ?: "",
-                            dateRangeNavigationIconButtonKey = NEXT_WEEK_KEY
-                        ),
-                        isShowPreviousWeekButton = showDateRangeNavigationIconButton(
-                            dateStr = classSchedule?.currentWeekId ?: "",
-                            dateRangeNavigationIconButtonKey = PREVIOUS_WEEK_KEY
-                        ),
-                        isLoading = false,
-                        error = null
-                    )
+                try {
+                    when (val responseResult = repository.fetchNextWeekClassSchedule()) {
+                        is Result.Success -> {
+                            val classSchedule = responseResult.data
+                            val daysOfWeek = classSchedule?.daysOfWeek ?: listOf()
+                            val weekDateRange =
+                                generateWeekDateRange(classSchedule?.currentWeekId ?: "")
+                            val currentDayIndex = getCurrentDayIndex()
+                            setState {
+                                copy(
+                                    currentWeekId = classSchedule?.currentWeekId ?: "",
+                                    daysOfWeek = daysOfWeek,
+                                    weekDateRange = weekDateRange,
+                                    currentDayIndex = currentDayIndex,
+                                    isShowNextWeekButton = showDateRangeNavigationIconButton(
+                                        dateStr = classSchedule?.currentWeekId ?: "",
+                                        dateRangeNavigationIconButtonKey = NEXT_WEEK_KEY
+                                    ),
+                                    isShowPreviousWeekButton = showDateRangeNavigationIconButton(
+                                        dateStr = classSchedule?.currentWeekId ?: "",
+                                        dateRangeNavigationIconButtonKey = PREVIOUS_WEEK_KEY
+                                    ),
+                                    isLoading = false,
+                                    error = null
+                                )
+                            }
+                        }
+
+                        is Result.Error -> {
+                            setState {
+                                copy(
+                                    currentWeekId = this.currentWeekId,
+                                    daysOfWeek = this.daysOfWeek,
+                                    weekDateRange = this.weekDateRange,
+                                    currentDayIndex = this.currentDayIndex,
+                                    isShowNextWeekButton = this.isShowNextWeekButton,
+                                    isShowPreviousWeekButton = this.isShowPreviousWeekButton,
+                                    isLoading = false,
+                                    error = responseResult.message
+                                )
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    setState {
+                        copy(
+                            currentWeekId = this.currentWeekId,
+                            daysOfWeek = this.daysOfWeek,
+                            weekDateRange = this.weekDateRange,
+                            currentDayIndex = this.currentDayIndex,
+                            isShowNextWeekButton = this.isShowNextWeekButton,
+                            isShowPreviousWeekButton = this.isShowPreviousWeekButton,
+                            isLoading = false,
+                            error = e.message
+                        )
+                    }
                 }
             }
         } catch (e: Exception) {
             setState {
                 copy(
+                    currentWeekId = this.currentWeekId,
                     daysOfWeek = this.daysOfWeek,
                     weekDateRange = this.weekDateRange,
                     currentDayIndex = this.currentDayIndex,
@@ -239,18 +363,34 @@ class ClassScheduleViewModel @Inject constructor(
     }
 
     private fun generateWeekDateRange(inputDate: String): String {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val currentDate = LocalDate.parse(inputDate, formatter)
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val currentDate = LocalDate.parse(inputDate, formatter)
 
-        val startOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-        val endOfWeek = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+            val startOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+            val endOfWeek = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
 
-        val startOfWeekFormatted =
-            startOfWeek.format(DateTimeFormatter.ofPattern("d MMMM", java.util.Locale("uk")))
-        val endOfWeekFormatted =
-            endOfWeek.format(DateTimeFormatter.ofPattern("d MMMM", java.util.Locale("uk")))
+            val startOfWeekFormatted =
+                startOfWeek.format(DateTimeFormatter.ofPattern("d MMMM", java.util.Locale("uk")))
+            val endOfWeekFormatted =
+                endOfWeek.format(DateTimeFormatter.ofPattern("d MMMM", java.util.Locale("uk")))
 
-        return "$startOfWeekFormatted - $endOfWeekFormatted"
+            return "$startOfWeekFormatted - $endOfWeekFormatted"
+        } catch (e: Exception) {
+            setState {
+                copy(
+                    currentWeekId = this.currentWeekId,
+                    daysOfWeek = this.daysOfWeek,
+                    weekDateRange = this.weekDateRange,
+                    currentDayIndex = this.currentDayIndex,
+                    isShowNextWeekButton = this.isShowNextWeekButton,
+                    isShowPreviousWeekButton = this.isShowPreviousWeekButton,
+                    isLoading = false,
+                    error = e.message
+                )
+            }
+            ""
+        }
     }
 
     private fun getCurrentDayIndex(): Int {
@@ -263,7 +403,8 @@ class ClassScheduleViewModel @Inject constructor(
         navController.navigate(
             route = Screen.Lesson.putArguments(
                 dayIndex = dayIndex,
-                lessonIndex = lessonIndex
+                lessonIndex = lessonIndex,
+                currentWeekId = viewState.value.currentWeekId
             )
         )
     }
@@ -272,23 +413,39 @@ class ClassScheduleViewModel @Inject constructor(
         dateStr: String,
         dateRangeNavigationIconButtonKey: String
     ): Boolean {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val date = LocalDate.parse(dateStr, formatter)
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val date = LocalDate.parse(dateStr, formatter)
 
-        val currentDate = LocalDate.parse(LocalDate.now().format(formatter))
-        val startDate = LocalDate.of(currentDate.year, Month.SEPTEMBER, 1)
-        val endDate = LocalDate.of(currentDate.year + 1, Month.MAY, 31)
+            val currentDate = LocalDate.parse(LocalDate.now().format(formatter))
+            val startDate = LocalDate.of(currentDate.year, Month.SEPTEMBER, 1)
+            val endDate = LocalDate.of(currentDate.year + 1, Month.MAY, 31)
 
-        return when (dateRangeNavigationIconButtonKey) {
-            PREVIOUS_WEEK_KEY -> {
-                date.isAfter(startDate)
+            when (dateRangeNavigationIconButtonKey) {
+                PREVIOUS_WEEK_KEY -> {
+                    date.isAfter(startDate)
+                }
+
+                NEXT_WEEK_KEY -> {
+                    date.isBefore(endDate)
+                }
+
+                else -> false
             }
-
-            NEXT_WEEK_KEY -> {
-                date.isBefore(endDate)
+        } catch (e: Exception) {
+            setState {
+                copy(
+                    currentWeekId = this.currentWeekId,
+                    daysOfWeek = this.daysOfWeek,
+                    weekDateRange = this.weekDateRange,
+                    currentDayIndex = this.currentDayIndex,
+                    isShowNextWeekButton = this.isShowNextWeekButton,
+                    isShowPreviousWeekButton = this.isShowPreviousWeekButton,
+                    isLoading = false,
+                    error = e.message
+                )
             }
-
-            else -> false
+            false
         }
     }
 

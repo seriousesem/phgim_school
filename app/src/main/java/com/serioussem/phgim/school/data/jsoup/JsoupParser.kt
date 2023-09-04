@@ -21,9 +21,9 @@ class JsoupParser @Inject constructor(
                 val dayTableElements = day.select("tr")
                 val lessonsOfDayList = mutableListOf<LessonDto>()
                 for (lesson in dayTableElements) {
-                    val lessonName = lesson.select("td.lesson > span").text()
-                    val homeWork = lesson.select("td.ht > div.ht-aside").text()
-                    val mark = lesson.select("td.mark > div.mark_box").text()
+                    val lessonName = lesson.select("td.lesson").text()
+                    val homeWork = lesson.select("td.ht").text()
+                    val mark = lesson.select("td.mark").text()
                     lessonsOfDayList.add(
                         LessonDto(
                             lessonName = lessonName,
