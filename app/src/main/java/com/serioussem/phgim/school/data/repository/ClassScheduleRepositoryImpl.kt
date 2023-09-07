@@ -251,7 +251,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
 
         val newDate = if (actionOnWeek == NEXT_WEEK) {
             if (date.isAfter(endOfYear)) {
-                storage.saveData(QUARTER_ID, "")
+//                storage.saveData(QUARTER_ID, "")
                 LocalDate.of(nextYear, Month.JANUARY, 1)
             } else {
                 date
