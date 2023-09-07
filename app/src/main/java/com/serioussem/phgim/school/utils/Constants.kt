@@ -39,3 +39,8 @@ object DateRangeNavigationIconButtonKey {
     const val NEXT_WEEK_KEY = "next_week_key"
     const val PREVIOUS_WEEK_KEY = "previous_week_key"
 }
+object NotificationsKeys {
+    const val CLASS_SCHEDULE_CHANNEL_ID = "class_schedule_channel"
+    const val CLASS_SCHEDULE_CHANNEL_NAME = "Мій щоденник"
+    const val CLASS_SCHEDULE_NOTIFICATION_TITLE = "В щоденник додалися нові дані"
+}

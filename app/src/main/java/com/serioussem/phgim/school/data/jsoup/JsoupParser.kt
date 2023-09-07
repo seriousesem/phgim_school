@@ -4,6 +4,7 @@ import com.serioussem.phgim.school.data.dto.ClassScheduleDto
 import com.serioussem.phgim.school.data.dto.LessonDto
 import com.serioussem.phgim.school.data.dto.DaysOfWeekDto
 import com.serioussem.phgim.school.utils.URL
+import com.serioussem.phgim.school.utils.URL.BASE_URL
 import com.serioussem.phgim.school.utils.toJsoupDocument
 import org.jsoup.Jsoup
 import retrofit2.Response
@@ -22,7 +23,13 @@ class JsoupParser @Inject constructor(
                 val lessonsOfDayList = mutableListOf<LessonDto>()
                 for (lesson in dayTableElements) {
                     val lessonName = lesson.select("td.lesson").text()
-                    val homeWork = lesson.select("td.ht").text()
+                    val attachedFilesEndPoint =
+                        lesson.select("td.ht > div.ht-aside >" + " div.attachments_dropdown >"
+                                + " a.attachments_dropdown_toggle").attr("href")
+                    val attachedFiles = if (attachedFilesEndPoint.isNotEmpty()) "\n" +
+                            "Додані файли: $BASE_URL$attachedFilesEndPoint" else ""
+                    val homeWork =
+                        "${lesson.select("td.ht").text()} $attachedFiles"
                     val mark = lesson.select("td.mark").text()
                     lessonsOfDayList.add(
                         LessonDto(
@@ -90,8 +97,9 @@ class JsoupParser @Inject constructor(
         return try {
             val pageResponseBody = pageResponse.body() ?: ""
             val pageDocument = pageResponseBody.toJsoupDocument()
-            val aTag = pageDocument.select("a.current").first()
-            aTag?.attr("quarter_id") ?: ""
+            val aTagCurrent = pageDocument.select("a.current").first()
+//            val aTagPast = pageDocument.select("a.past").first()
+            aTagCurrent?.attr("quarter_id") ?: ""
         } catch (e: Exception) {
             throw e
         }
