@@ -22,7 +22,7 @@ class ClassScheduleRepositoryMock @Inject constructor(
     }
     override suspend fun fetchCurrentWeekClassSchedule(): Result<ClassScheduleModel> {
         return try {
-            storage.saveData(LocalStorageKeys.WEEK_ID, "2023-08-28" ?: "")
+            storage.saveData(LocalStorageKeys.WEEK_ID, "2023-08-28")
             Result.Success(
                 data = ClassScheduleModel(
                     currentWeekId = "2023-08-28",
@@ -187,7 +187,7 @@ class ClassScheduleRepositoryMock @Inject constructor(
 
     override suspend fun fetchNextWeekClassSchedule(): Result<ClassScheduleModel> {
         return try {
-            val nextWeekId = changeWeekId(ActionOnWeek.NEXT_WEEK)
+            val nextWeekId = changeWeekId(NEXT_WEEK)
             Result.Success(
                 data = ClassScheduleModel(
                     currentWeekId = nextWeekId,
@@ -516,6 +516,10 @@ class ClassScheduleRepositoryMock @Inject constructor(
     }
 
     override suspend fun fetchClassScheduleByCurrentWeekId(currentWeekId: String): Result<ClassScheduleModel> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun synchronizeClassScheduleData(): Boolean {
         TODO("Not yet implemented")
     }
 
