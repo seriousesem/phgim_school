@@ -30,11 +30,11 @@ class SplashViewModel @Inject constructor(
     var loadingProgressState by mutableFloatStateOf(0.0F)
         private set
 
-    var isAuthorized = false
+    private var isAuthorized = false
 
     companion object {
         const val PROGRESS_DELAY = 35L
-        const val CHECK_CLASS_SCHEDULE_UPDATE = "check_class_schedule_update4"
+        const val CHECK_CLASS_SCHEDULE_UPDATE = "check_class_schedule_update"
     }
 
     init {
