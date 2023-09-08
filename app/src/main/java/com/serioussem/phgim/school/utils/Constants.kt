@@ -42,5 +42,6 @@ object DateRangeNavigationIconButtonKey {
 object NotificationsKeys {
     const val CLASS_SCHEDULE_CHANNEL_ID = "class_schedule_channel"
     const val CLASS_SCHEDULE_CHANNEL_NAME = "Мій щоденник"
-    const val CLASS_SCHEDULE_NOTIFICATION_TITLE = "В щоденник додалися нові дані"
+    const val CLASS_SCHEDULE_NOTIFICATION_TITLE = "В щоденник було додано новий запис"
+    const val CLASS_SCHEDULE_NOTIFICATION_MESSAGE = "Зайдіть в додаток і перевірте домашні завдання або оцінки"
 }

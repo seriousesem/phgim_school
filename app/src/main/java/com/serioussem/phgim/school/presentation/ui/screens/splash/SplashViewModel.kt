@@ -1,4 +1,5 @@
 package com.serioussem.phgim.school.presentation.ui.screens.splash
+
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -28,13 +29,19 @@ class SplashViewModel @Inject constructor(
 
     var loadingProgressState by mutableFloatStateOf(0.0F)
         private set
+
+    var isAuthorized = false
+
     companion object {
         const val PROGRESS_DELAY = 35L
-        const val CHECK_CLASS_SCHEDULE_UPDATE = "check_class_schedule_update2"
+        const val CHECK_CLASS_SCHEDULE_UPDATE = "check_class_schedule_update4"
+    }
+
+    init {
+        isAuthorized = checkAuthorization()
     }
 
     suspend fun navigateToNextScreen(navController: NavController) {
-        val isAuthorized = checkAuthorization()
         startLoadingProgress()
         if (!isAuthorized) {
             navController.navigate(Screen.Login.route)
@@ -61,22 +68,24 @@ class SplashViewModel @Inject constructor(
     }
 
     fun startBackgroundWorker(context: Context) {
-        val constraints = Constraints.Builder()
-            .setRequiresBatteryNotLow(true)
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-        val workRequest = PeriodicWorkRequestBuilder<BackgroundWorker>(
-            repeatInterval = 30,
-            repeatIntervalTimeUnit = MINUTES
-        )
-            .setConstraints(constraints)
-            .setInitialDelay(30, MINUTES)
-            .build()
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            CHECK_CLASS_SCHEDULE_UPDATE,
-            ExistingPeriodicWorkPolicy.UPDATE,
-            workRequest
-        )
+        if (isAuthorized) {
+            val constraints = Constraints.Builder()
+                .setRequiresBatteryNotLow(true)
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+            val workRequest = PeriodicWorkRequestBuilder<BackgroundWorker>(
+                repeatInterval = 30,
+                repeatIntervalTimeUnit = MINUTES
+            )
+                .setConstraints(constraints)
+                .setInitialDelay(30, MINUTES)
+                .build()
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                CHECK_CLASS_SCHEDULE_UPDATE,
+                ExistingPeriodicWorkPolicy.UPDATE,
+                workRequest
+            )
+        }
     }
 
 }

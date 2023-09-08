@@ -34,7 +34,6 @@ class ClassScheduleRepositoryImpl @Inject constructor(
     private val classScheduleDao: ClassScheduleDao,
     private val responseHandler: ResponseHandler
 ) : ClassScheduleRepository {
-
     private fun provideService() {
         val loggingInterceptor = provideLoggingInterceptor()
         val cookieManager = provideCookieManager()
@@ -128,11 +127,35 @@ class ClassScheduleRepositoryImpl @Inject constructor(
     override suspend fun fetchClassScheduleByCurrentWeekId(currentWeekId: String): Result<ClassScheduleModel> {
         return try {
             val classScheduleEntity =
-                classScheduleDao.selectClassByCurrentWeekId(currentWeekId = currentWeekId)
+                classScheduleDao.selectClassScheduleByCurrentWeekId(currentWeekId = currentWeekId)
             val classScheduleModel = classScheduleEntity.toClassScheduleModel()
             Result.Success(data = classScheduleModel)
         } catch (e: Exception) {
             Result.Error(message = e.message ?: "Fetch ClassSchedule error")
+        }
+    }
+
+    override suspend fun synchronizeClassScheduleData(): Boolean {
+        return try {
+            getCurrentWeek()
+            val currentWeekId = storage.loadData<String>(WEEK_ID, defaultValue = "")
+            val classScheduleHtml = getClassSchedulePageHtml(currentWeekId)
+            val classScheduleDto = jsoupParser.parseClassSchedule(
+                currentWeek = currentWeekId,
+                classScheduleHtml = classScheduleHtml
+            )
+            val remoteClassScheduleEntity = classScheduleDto.toClassScheduleEntity()
+            val localClassScheduleEntity =
+                classScheduleDao.selectClassScheduleByCurrentWeekId(currentWeekId)
+            if (localClassScheduleEntity.daysOfWeek.lessonsOfDayList != remoteClassScheduleEntity.daysOfWeek.lessonsOfDayList
+            ) {
+                classScheduleDao.insertClassSchedule(remoteClassScheduleEntity)
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            false
         }
     }
 

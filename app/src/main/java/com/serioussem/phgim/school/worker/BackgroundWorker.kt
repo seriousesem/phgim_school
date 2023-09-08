@@ -1,35 +1,36 @@
 package com.serioussem.phgim.school.worker
-
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.serioussem.phgim.school.R
 import com.serioussem.phgim.school.app.MainActivity
+import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
 import com.serioussem.phgim.school.utils.NotificationsKeys
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.serioussem.phgim.school.utils.NotificationsKeys.CLASS_SCHEDULE_NOTIFICATION_MESSAGE
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 
-class BackgroundWorker(
-    context: Context,
-    workerParams: WorkerParameters,
+
+@HiltWorker
+class BackgroundWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val repository: ClassScheduleRepository
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
         return try {
-            withContext(Dispatchers.IO) {
+            if (repository.synchronizeClassScheduleData()) {
                 showNotification(
-                    "Перевірено оновлення в ${
-                        LocalDate.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
-                    }"
+                    CLASS_SCHEDULE_NOTIFICATION_MESSAGE
                 )
-                Result.success()
             }
+            Result.success()
         } catch (e: Exception) {
             Result.failure()
         }

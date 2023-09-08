@@ -111,6 +111,8 @@ private fun PasswordTextField(password: String, changePasswordAction: (String) -
     Box(modifier = Modifier.padding(24.dp, 0.dp, 24.dp, 0.dp))
     {
         OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth(),
             label = { Text(text = stringResource(id = R.string.password_label)) },
             value = password,
             onValueChange = { changePasswordAction(it) },
@@ -135,6 +137,8 @@ private fun PasswordTextField(password: String, changePasswordAction: (String) -
 private fun LoginTextField(login: String, changeLoginAction: (String) -> Unit) {
     Box(modifier = Modifier.padding(24.dp, 0.dp, 24.dp, 0.dp)) {
         OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth(),
             label = { Text(text = stringResource(id = R.string.login_label)) },
             value = login,
             onValueChange = { changeLoginAction(it) },

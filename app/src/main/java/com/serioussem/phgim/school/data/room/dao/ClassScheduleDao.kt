@@ -14,6 +14,6 @@ interface ClassScheduleDao {
     suspend fun insertClassSchedule(classScheduleEntity: ClassScheduleEntity)
 
     @Query("SELECT * FROM $CLASS_SCHEDULE_TABLE_NAME WHERE currentWeekId = :currentWeekId")
-    suspend fun selectClassByCurrentWeekId(currentWeekId: String): ClassScheduleEntity
+    suspend fun selectClassScheduleByCurrentWeekId(currentWeekId: String): ClassScheduleEntity
 
 }
