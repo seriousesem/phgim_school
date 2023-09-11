@@ -22,6 +22,8 @@ import com.serioussem.phgim.school.utils.LocalStorageKeys.PASSWORD_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PUPIL_ID
 import com.serioussem.phgim.school.utils.LocalStorageKeys.QUARTER_ID
 import com.serioussem.phgim.school.utils.LocalStorageKeys.WEEK_ID
+import com.serioussem.phgim.school.utils.SemestersKey.FIRST_SEMESTER_KEY
+import com.serioussem.phgim.school.utils.SemestersKey.SECOND_SEMESTER_KEY
 import java.time.LocalDate
 import java.time.Month
 import java.time.format.DateTimeFormatter
@@ -93,6 +95,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
     override suspend fun fetchNextWeekClassSchedule(): Result<ClassScheduleModel> {
         return try {
             val nextWeekId = changeWeekId(NEXT_WEEK)
+            calculateQuarterId()
             val classScheduleHtml = getClassSchedulePageHtml(nextWeekId)
             val classScheduleDto = jsoupParser.parseClassSchedule(
                 currentWeek = nextWeekId,
@@ -110,6 +113,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
     override suspend fun fetchPreviousWeekClassSchedule(): Result<ClassScheduleModel> {
         return try {
             val previousWeekId = changeWeekId(PREVIOUS_WEEK)
+            calculateQuarterId()
             val classScheduleHtml = getClassSchedulePageHtml(previousWeekId)
             val classScheduleDto = jsoupParser.parseClassSchedule(
                 currentWeek = previousWeekId,
@@ -132,7 +136,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
             if (classScheduleEntity != null) {
                 val classScheduleModel = classScheduleEntity.toClassScheduleModel()
                 Result.Success(data = classScheduleModel)
-            }else {
+            } else {
                 Result.Error(message = "На цей тиждень не збережено даних щоденника, для завантаження даних потрібне підключення до інтернету")
             }
         } catch (e: Exception) {
@@ -201,7 +205,20 @@ class ClassScheduleRepositoryImpl @Inject constructor(
             val pageResponse = responseHandler.fetch {
                 service?.getQuarterIdPage(pupilId)
             }
-            val quarterId = pageResponse.let { jsoupParser.parseQuarterId(it) }
+            val quarterId = pageResponse.let { jsoupParser.parseQuarterId(it, "") }
+            storage.saveData(QUARTER_ID, quarterId)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+    private suspend fun calculateQuarterId() {
+        try {
+            val pupilId = storage.loadData<String>(PUPIL_ID, defaultValue = "")
+            val pageResponse = responseHandler.fetch {
+                service?.getQuarterIdPage(pupilId)
+            }
+            val semesterKey = calculateSemesterKey()
+            val quarterId = pageResponse.let { jsoupParser.parseQuarterId(it, semesterKey) }
             storage.saveData(QUARTER_ID, quarterId)
         } catch (e: Exception) {
             throw e
@@ -212,11 +229,8 @@ class ClassScheduleRepositoryImpl @Inject constructor(
         try {
             getPupilId()
             val pupilId = storage.loadData<String>(PUPIL_ID, defaultValue = "")
-            var quarterId = storage.loadData<String>(QUARTER_ID, defaultValue = "")
-            if (quarterId.isEmpty()) {
-                getQuarterId()
-                quarterId = storage.loadData(QUARTER_ID, defaultValue = "")
-            }
+            getQuarterId()
+            val quarterId = storage.loadData<String>(QUARTER_ID, defaultValue = "")
             val endpointResponse = responseHandler.fetch {
                 service?.getClassScheduleCurrentWeekPage(pupilId = pupilId, quarterId = quarterId)
             }
@@ -279,7 +293,6 @@ class ClassScheduleRepositoryImpl @Inject constructor(
 
         val newDate = if (actionOnWeek == NEXT_WEEK) {
             if (date.isAfter(endOfYear)) {
-//                storage.saveData(QUARTER_ID, "")
                 LocalDate.of(nextYear, Month.JANUARY, 1)
             } else {
                 date
@@ -292,6 +305,26 @@ class ClassScheduleRepositoryImpl @Inject constructor(
             }
         }
         return newDate.format(formatter)
+    }
+
+    private fun calculateSemesterKey(): String {
+        val currentWeekId = storage.loadData<String>(WEEK_ID, defaultValue = "")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val date = if (currentWeekId.isNotEmpty()) LocalDate.parse(
+            currentWeekId,
+            formatter
+        ) else LocalDate.parse(LocalDate.now().format(formatter))
+        val firstSemesterStartDate = LocalDate.of(date.year, Month.AUGUST, 23)
+        val firstSemesterEndDate = LocalDate.of(date.year + 1, Month.JANUARY, 1)
+        val secondSemesterStartDate = LocalDate.of(date.year - 1, Month.DECEMBER, 31)
+        val secondSemesterEndDate = LocalDate.of(date.year, Month.MAY, 31)
+        return if (date.isAfter(firstSemesterStartDate) && date.isBefore(firstSemesterEndDate)) {
+            FIRST_SEMESTER_KEY
+        } else if (date.isAfter(secondSemesterStartDate) && date.isBefore(secondSemesterEndDate)) {
+            SECOND_SEMESTER_KEY
+        } else {
+            ""
+        }
     }
 
 }

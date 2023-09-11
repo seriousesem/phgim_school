@@ -3,6 +3,8 @@ package com.serioussem.phgim.school.data.jsoup
 import com.serioussem.phgim.school.data.dto.ClassScheduleDto
 import com.serioussem.phgim.school.data.dto.LessonDto
 import com.serioussem.phgim.school.data.dto.DaysOfWeekDto
+import com.serioussem.phgim.school.utils.SemestersKey.FIRST_SEMESTER_KEY
+import com.serioussem.phgim.school.utils.SemestersKey.SECOND_SEMESTER_KEY
 import com.serioussem.phgim.school.utils.URL
 import com.serioussem.phgim.school.utils.URL.BASE_URL
 import com.serioussem.phgim.school.utils.toJsoupDocument
@@ -24,8 +26,10 @@ class JsoupParser @Inject constructor(
                 for (lesson in dayTableElements) {
                     val lessonName = lesson.select("td.lesson").text()
                     val attachedFilesEndPoint =
-                        lesson.select("td.ht > div.ht-aside >" + " div.attachments_dropdown >"
-                                + " a.attachments_dropdown_toggle").attr("href")
+                        lesson.select(
+                            "td.ht > div.ht-aside >" + " div.attachments_dropdown >"
+                                    + " a.attachments_dropdown_toggle"
+                        ).attr("href")
                     val attachedFiles = if (attachedFilesEndPoint.isNotEmpty()) "\n" +
                             "Додані файли: $BASE_URL$attachedFilesEndPoint" else ""
                     val homeWork =
@@ -93,13 +97,18 @@ class JsoupParser @Inject constructor(
         }
     }
 
-    fun parseQuarterId(pageResponse: Response<String>): String {
+    fun parseQuarterId(pageResponse: Response<String>, semesterKey: String): String {
         return try {
             val pageResponseBody = pageResponse.body() ?: ""
             val pageDocument = pageResponseBody.toJsoupDocument()
-            val aTagCurrent = pageDocument.select("a.current").first()
-//            val aTagPast = pageDocument.select("a.past").first()
-            aTagCurrent?.attr("quarter_id") ?: ""
+            val aTag = when (semesterKey) {
+                FIRST_SEMESTER_KEY -> pageDocument.select("a.current").first()
+                SECOND_SEMESTER_KEY -> pageDocument.select("a.past").first()
+                else -> {
+                    pageDocument.select("a.current").first()
+                }
+            }
+            aTag?.attr("quarter_id") ?: ""
         } catch (e: Exception) {
             throw e
         }
