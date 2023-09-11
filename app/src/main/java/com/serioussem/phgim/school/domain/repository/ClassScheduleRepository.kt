@@ -8,8 +8,7 @@ interface ClassScheduleRepository {
     suspend fun fetchCurrentWeekClassSchedule(): Result<ClassScheduleModel>
     suspend fun fetchNextWeekClassSchedule(): Result<ClassScheduleModel>
     suspend fun fetchPreviousWeekClassSchedule(): Result<ClassScheduleModel>
-    suspend fun fetchClassScheduleByCurrentWeekId(currentWeekId: String): Result<ClassScheduleModel>
-
+    suspend fun fetchLocalClassSchedule(): Result<ClassScheduleModel>
     suspend fun synchronizeClassScheduleData(): Boolean
 
 }

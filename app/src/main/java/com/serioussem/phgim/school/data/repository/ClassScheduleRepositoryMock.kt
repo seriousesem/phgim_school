@@ -515,7 +515,7 @@ class ClassScheduleRepositoryMock @Inject constructor(
         }
     }
 
-    override suspend fun fetchClassScheduleByCurrentWeekId(currentWeekId: String): Result<ClassScheduleModel> {
+    override suspend fun fetchLocalClassSchedule(): Result<ClassScheduleModel> {
         TODO("Not yet implemented")
     }
 

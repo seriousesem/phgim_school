@@ -6,7 +6,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.CURRENT_WEEK_ID_KEY
 import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.DAY_INDEX_KEY
 import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.LESSON_INDEX_KEY
 import com.serioussem.phgim.school.presentation.ui.screens.class_schedule.ClassScheduleScreen
@@ -42,9 +41,6 @@ fun Navigation(showAd: () -> Unit) {
                 navArgument(DAY_INDEX_KEY) {
                     type = NavType.IntType
                 },
-                navArgument(CURRENT_WEEK_ID_KEY) {
-                    type = NavType.StringType
-                }
             )
         ) {
             LessonScreen(navController = navController)

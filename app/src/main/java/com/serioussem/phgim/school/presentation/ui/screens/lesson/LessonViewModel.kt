@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.serioussem.phgim.school.core.BaseViewModel
 import com.serioussem.phgim.school.domain.core.Result
 import com.serioussem.phgim.school.domain.repository.ClassScheduleRepository
-import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.CURRENT_WEEK_ID_KEY
 import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.DAY_INDEX_KEY
 import com.serioussem.phgim.school.presentation.navigation.NavigationArgumentsKEY.LESSON_INDEX_KEY
 import com.serioussem.phgim.school.utils.MapKeys.ANNOTATED_STRING_MAP_KEY
@@ -25,7 +24,6 @@ class LessonViewModel @Inject constructor(
 
     private val dayIndex: Int = checkNotNull(savedStateHandle[DAY_INDEX_KEY])
     private val lessonIndex: Int = checkNotNull(savedStateHandle[LESSON_INDEX_KEY])
-    private val currentWeekId: String = checkNotNull(savedStateHandle[CURRENT_WEEK_ID_KEY])
 
     init {
         fetchLesson()
@@ -75,7 +73,7 @@ class LessonViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     when (val responseResult =
-                        repository.fetchClassScheduleByCurrentWeekId(currentWeekId = currentWeekId)) {
+                        repository.fetchLocalClassSchedule()) {
 
                         is Result.Success -> {
                             val classSchedule = responseResult.data

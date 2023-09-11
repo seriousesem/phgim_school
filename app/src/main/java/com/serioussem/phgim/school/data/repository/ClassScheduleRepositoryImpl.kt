@@ -74,7 +74,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
 
     override suspend fun fetchCurrentWeekClassSchedule(): Result<ClassScheduleModel> {
         return try {
-            getCurrentWeek()
+            getCurrentWeekId()
             val currentWeekId = storage.loadData<String>(WEEK_ID, defaultValue = "")
             val classScheduleHtml = getClassSchedulePageHtml(currentWeekId)
             val classScheduleDto = jsoupParser.parseClassSchedule(
@@ -124,12 +124,17 @@ class ClassScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchClassScheduleByCurrentWeekId(currentWeekId: String): Result<ClassScheduleModel> {
+    override suspend fun fetchLocalClassSchedule(): Result<ClassScheduleModel> {
         return try {
+            val currentWeekId = storage.loadData<String>(WEEK_ID, defaultValue = "")
             val classScheduleEntity =
                 classScheduleDao.selectClassScheduleByCurrentWeekId(currentWeekId = currentWeekId)
-            val classScheduleModel = classScheduleEntity.toClassScheduleModel()
-            Result.Success(data = classScheduleModel)
+            if (classScheduleEntity != null) {
+                val classScheduleModel = classScheduleEntity.toClassScheduleModel()
+                Result.Success(data = classScheduleModel)
+            }else {
+                Result.Error(message = "На цей тиждень не збережено даних щоденника, для завантаження даних потрібне підключення до інтернету")
+            }
         } catch (e: Exception) {
             Result.Error(message = e.message ?: "Fetch ClassSchedule error")
         }
@@ -137,7 +142,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
 
     override suspend fun synchronizeClassScheduleData(): Boolean {
         return try {
-            getCurrentWeek()
+            getCurrentWeekId()
             val currentWeekId = storage.loadData<String>(WEEK_ID, defaultValue = "")
             val classScheduleHtml = getClassSchedulePageHtml(currentWeekId)
             val classScheduleDto = jsoupParser.parseClassSchedule(
@@ -147,7 +152,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
             val remoteClassScheduleEntity = classScheduleDto.toClassScheduleEntity()
             val localClassScheduleEntity =
                 classScheduleDao.selectClassScheduleByCurrentWeekId(currentWeekId)
-            if (localClassScheduleEntity.daysOfWeek.lessonsOfDayList != remoteClassScheduleEntity.daysOfWeek.lessonsOfDayList
+            if (localClassScheduleEntity?.daysOfWeek?.lessonsOfDayList != remoteClassScheduleEntity.daysOfWeek.lessonsOfDayList
             ) {
                 classScheduleDao.insertClassSchedule(remoteClassScheduleEntity)
                 true
@@ -203,7 +208,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getCurrentWeek() {
+    private suspend fun getCurrentWeekId() {
         try {
             getPupilId()
             val pupilId = storage.loadData<String>(PUPIL_ID, defaultValue = "")
