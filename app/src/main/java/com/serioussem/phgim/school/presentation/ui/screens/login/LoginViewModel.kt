@@ -127,6 +127,8 @@ class LoginViewModel @Inject constructor(
                                 )
                             }
                         }
+
+                        else -> {}
                     }
                 } catch (e: Exception) {
                     setState {
