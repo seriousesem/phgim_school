@@ -542,18 +542,15 @@ class ClassScheduleViewModel @Inject constructor(
         return try {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             val date = LocalDate.parse(dateStr, formatter)
-
-            val currentDate = LocalDate.parse(LocalDate.now().format(formatter))
-            val startDate = LocalDate.of(currentDate.year, Month.SEPTEMBER, 1)
-            val endDate = LocalDate.of(currentDate.year + 1, Month.MAY, 31)
+            val dataMonth = date.month.value
 
             when (dateRangeNavigationIconButtonKey) {
                 PREVIOUS_WEEK_KEY -> {
-                    date.isAfter(startDate)
+                    dataMonth in 1..12 && dataMonth !in 7..9
                 }
 
                 NEXT_WEEK_KEY -> {
-                    date.isBefore(endDate)
+                    dataMonth in 1..12 && dataMonth !in 6..8
                 }
 
                 else -> false

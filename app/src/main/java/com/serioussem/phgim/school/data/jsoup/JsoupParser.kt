@@ -3,8 +3,8 @@ package com.serioussem.phgim.school.data.jsoup
 import com.serioussem.phgim.school.data.dto.ClassScheduleDto
 import com.serioussem.phgim.school.data.dto.LessonDto
 import com.serioussem.phgim.school.data.dto.DaysOfWeekDto
-import com.serioussem.phgim.school.utils.SemestersKey.FIRST_SEMESTER_KEY
-import com.serioussem.phgim.school.utils.SemestersKey.SECOND_SEMESTER_KEY
+import com.serioussem.phgim.school.utils.SemestersKey.CURRENT_SEMESTER_KEY
+import com.serioussem.phgim.school.utils.SemestersKey.PREVIOUS_SEMESTER_KEY
 import com.serioussem.phgim.school.utils.URL
 import com.serioussem.phgim.school.utils.URL.BASE_URL
 import com.serioussem.phgim.school.utils.toJsoupDocument
@@ -102,8 +102,8 @@ class JsoupParser @Inject constructor(
             val pageResponseBody = pageResponse.body() ?: ""
             val pageDocument = pageResponseBody.toJsoupDocument()
             val aTag = when (semesterKey) {
-                FIRST_SEMESTER_KEY -> pageDocument.select("a.current").first()
-                SECOND_SEMESTER_KEY -> pageDocument.select("a.past").first()
+                CURRENT_SEMESTER_KEY -> pageDocument.select("a.current").first()
+                PREVIOUS_SEMESTER_KEY -> pageDocument.select("a.past").last()
                 else -> {
                     pageDocument.select("a.current").first()
                 }

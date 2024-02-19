@@ -33,7 +33,6 @@ import com.serioussem.phgim.school.presentation.ui.components.AppTopBar
 import com.serioussem.phgim.school.presentation.ui.components.BackIconButton
 import com.serioussem.phgim.school.presentation.ui.components.ErrorDialog
 import com.serioussem.phgim.school.presentation.ui.components.HorizontalDivider
-import com.serioussem.phgim.school.presentation.ui.components.MenuIconButton
 import com.serioussem.phgim.school.presentation.ui.components.ScreenProgress
 import com.serioussem.phgim.school.presentation.ui.theme.White99
 import com.serioussem.phgim.school.utils.MapKeys.ANNOTATED_STRING_MAP_KEY
@@ -47,9 +46,7 @@ fun LessonScreen(
 ) {
 
     val state = viewModel.viewState.value
-    BackHandler(enabled = true) {
-        navController.popBackStack()
-    }
+    BackHandler(enabled = true, onBack = navController::popBackStack)
     AppScaffold(
         topBar = {
             AppTopBar(
@@ -57,9 +54,6 @@ fun LessonScreen(
                 navigationIcon = {
                     BackIconButton(navController = navController)
                 },
-                actionIcon = {
-                    MenuIconButton(action = {})
-                }
             )
         }
     ) { contentPadding ->

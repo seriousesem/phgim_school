@@ -23,11 +23,6 @@ class App : Application(), Configuration.Provider {
         createNotificationChannel()
     }
 
-    override fun getWorkManagerConfiguration(): Configuration =
-        Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
-
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CLASS_SCHEDULE_CHANNEL_ID,
@@ -38,4 +33,9 @@ class App : Application(), Configuration.Provider {
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
     }
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 }

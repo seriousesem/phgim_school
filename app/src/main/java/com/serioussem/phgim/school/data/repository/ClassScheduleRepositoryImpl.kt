@@ -22,8 +22,8 @@ import com.serioussem.phgim.school.utils.LocalStorageKeys.PASSWORD_KEY
 import com.serioussem.phgim.school.utils.LocalStorageKeys.PUPIL_ID
 import com.serioussem.phgim.school.utils.LocalStorageKeys.QUARTER_ID
 import com.serioussem.phgim.school.utils.LocalStorageKeys.WEEK_ID
-import com.serioussem.phgim.school.utils.SemestersKey.FIRST_SEMESTER_KEY
-import com.serioussem.phgim.school.utils.SemestersKey.SECOND_SEMESTER_KEY
+import com.serioussem.phgim.school.utils.SemestersKey.CURRENT_SEMESTER_KEY
+import com.serioussem.phgim.school.utils.SemestersKey.PREVIOUS_SEMESTER_KEY
 import java.time.LocalDate
 import java.time.Month
 import java.time.format.DateTimeFormatter
@@ -314,16 +314,11 @@ class ClassScheduleRepositoryImpl @Inject constructor(
             currentWeekId,
             formatter
         ) else LocalDate.parse(LocalDate.now().format(formatter))
-        val firstSemesterStartDate = LocalDate.of(date.year, Month.AUGUST, 23)
-        val firstSemesterEndDate = LocalDate.of(date.year + 1, Month.JANUARY, 1)
-        val secondSemesterStartDate = LocalDate.of(date.year - 1, Month.DECEMBER, 31)
-        val secondSemesterEndDate = LocalDate.of(date.year, Month.MAY, 31)
-        return if (date.isAfter(firstSemesterStartDate) && date.isBefore(firstSemesterEndDate)) {
-            FIRST_SEMESTER_KEY
-        } else if (date.isAfter(secondSemesterStartDate) && date.isBefore(secondSemesterEndDate)) {
-            SECOND_SEMESTER_KEY
+        val dataMonth = date.month.value
+        return if (dataMonth in 9..12) {
+            PREVIOUS_SEMESTER_KEY
         } else {
-            ""
+            CURRENT_SEMESTER_KEY
         }
     }
 

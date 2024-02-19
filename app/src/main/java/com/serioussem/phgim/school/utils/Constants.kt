@@ -40,8 +40,8 @@ object DateRangeNavigationIconButtonKey {
     const val PREVIOUS_WEEK_KEY = "previous_week_key"
 }
 object SemestersKey {
-    const val FIRST_SEMESTER_KEY = "first_semester_key"
-    const val SECOND_SEMESTER_KEY = "second_semester_key"
+    const val CURRENT_SEMESTER_KEY = "current_semester_key"
+    const val PREVIOUS_SEMESTER_KEY = "previous_semester_key"
 }
 object NotificationsKeys {
     const val CLASS_SCHEDULE_CHANNEL_ID = "class_schedule_channel"

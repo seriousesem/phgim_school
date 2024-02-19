@@ -45,7 +45,6 @@ import com.serioussem.phgim.school.presentation.ui.components.AppScaffold
 import com.serioussem.phgim.school.presentation.ui.components.AppTopBar
 import com.serioussem.phgim.school.presentation.ui.components.ErrorDialog
 import com.serioussem.phgim.school.presentation.ui.components.HorizontalDivider
-import com.serioussem.phgim.school.presentation.ui.components.MenuIconButton
 import com.serioussem.phgim.school.presentation.ui.components.ScreenProgress
 import com.serioussem.phgim.school.presentation.ui.components.VerticalDivider
 import com.serioussem.phgim.school.presentation.ui.theme.White99
@@ -69,7 +68,6 @@ fun ClassScheduleScreen(
             AppTopBar(
                 title = stringResource(id = R.string.class_schedule_screen_title),
                 navigationIcon = {},
-                actionIcon = { MenuIconButton(action = {}) }
             )
         }
     ) { contentPadding ->
