@@ -211,6 +211,7 @@ class ClassScheduleRepositoryImpl @Inject constructor(
             throw e
         }
     }
+
     private suspend fun calculateQuarterId() {
         try {
             val pupilId = storage.loadData<String>(PUPIL_ID, defaultValue = "")
@@ -308,14 +309,15 @@ class ClassScheduleRepositoryImpl @Inject constructor(
     }
 
     private fun calculateSemesterKey(): String {
-        val currentWeekId = storage.loadData<String>(WEEK_ID, defaultValue = "")
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val currentWeekId = storage.loadData<String>(WEEK_ID, defaultValue = "")
+        val currentMonth = LocalDate.parse(LocalDate.now().format(formatter)).month.value
         val date = if (currentWeekId.isNotEmpty()) LocalDate.parse(
             currentWeekId,
             formatter
         ) else LocalDate.parse(LocalDate.now().format(formatter))
         val dataMonth = date.month.value
-        return if (dataMonth in 9..12) {
+        return if (dataMonth in 9..12 && currentMonth !in 9..12) {
             PREVIOUS_SEMESTER_KEY
         } else {
             CURRENT_SEMESTER_KEY

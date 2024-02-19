@@ -28,8 +28,8 @@ android {
         applicationId = "com.seriousesem.phgim.school"
         minSdk = 27
         targetSdk = 34
-        versionCode = 8
-        versionName = "1.1.4"
+        versionCode = 9
+        versionName = "1.1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
